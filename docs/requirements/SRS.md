@@ -28,3 +28,22 @@
 ## 3. Sơ đồ Use-case tổng quát toàn hệ thống
 
 ![Sơ đồ Use-case tổng quát](../diagrams/use-case.png)
+
+## 4. Đặc tả Use-case trọng tâm: Đặt và thanh toán đơn hàng
+
+**Thông tin cơ bản:**
+
+- **Tên Use-case:** Đặt và thanh toán đơn hàng.
+- **Mã yêu cầu (Traceability):** FR-07 (Đặt đơn/thanh toán), FR-03 (Giỏ hàng), FR-05 (Đăng nhập).
+- **Actor:** Khách hàng.
+- **Sự kiện kích hoạt (Trigger):** Khi khách hàng nhấn nút "Thanh toán" tại màn hình Giỏ hàng.
+
+**Bảng đặc tả chi tiết:**
+
+| Thuộc tính         | Đặc tả chi tiết                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| :----------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Mục đích**       | Cho phép khách hàng thanh toán và ghi nhận hóa đơn. Khi khách hàng chốt nước uống, đồ ăn.                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **Luồng chính**    | 1. Khách hàng bấm nút "Thanh toán" ở trang giỏ hàng và chọn "Thanh toán qua mã QR".<br>2. Hệ thống tính tổng tiền, tạo Order ID và lưu vào database với trạng thái "Chờ thanh toán".<br>3. Hệ thống sinh mã QR chứa thông tin thanh toán hiển thị cho khách.<br>4. Khách hàng sử dụng app ngân hàng quét mã và chuyển tiền.<br>5. Cổng thanh toán gửi Webhook xác nhận giao dịch về BrewLite.<br>6. Hệ thống đối chiếu số tiền, cập nhật trạng thái đơn thành "Đã thanh toán".<br>7. Hệ thống xóa giỏ hàng và hiển thị thông báo đặt hàng thành công. |
+| **Luồng phụ**      | **- Đổi ý:** Tại bước 3, nếu khách bấm "Quay lại", hệ thống hủy mã QR, đưa khách về lại giỏ hàng và giữ nguyên các món đã chọn.<br>**- Quá hạn:** Sau 10 phút không có Webhook trả về, đơn hàng tự động chuyển sang "Đã hủy" do quá hạn. Khách phải đặt lại.<br>**- Sai số tiền:** Tại bước 5, nếu Webhook báo số tiền nhận nhỏ hơn bill thực tế, đơn chuyển "Thanh toán thiếu". Khách cần liên hệ quầy xử lý.<br>**- Lỗi database:** Tại bước 2, nếu PostgreSQL lỗi, báo "Lỗi do hệ thống" và giữ nguyên giỏ hàng.                                   |
+| **Tiền điều kiện** | - Khách hàng đã đăng nhập thành công.<br>- Giỏ hàng phải có sản phẩm.<br>- Đã kết nối thành công với API cổng thanh toán.                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **Hậu điều kiện**  | - Hóa đơn được tạo thành công trong PostgreSQL.<br>- Giỏ hàng của khách hàng được làm trống.                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
