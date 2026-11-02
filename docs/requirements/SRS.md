@@ -21,9 +21,9 @@
 | Mã         | Tên yêu cầu                         | Nhóm tính năng | Ưu tiên (MoSCoW) | Tiêu chí chấp nhận (Acceptance Criteria)                                                                                                 |
 | :--------- | :---------------------------------- | :------------- | :--------------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
 | **NFR-01** | Tính khả dụng (Usability)           | Khả dụng       | **Must**         | Giao diện frontend bằng Next.js phải tuân thủ thiết kế mobile-first, có thể cài đặt như ứng dụng PWA trên điện thoại.                    |
-| **NFR-02** | Hiệu năng (Performance)             | Hiệu năng      | **Should**       | Thời gian phản hồi của các API Backend (NestJS) thông thường không vượt quá 500ms.                                                       |
-| **NFR-03** | Bảo mật (Security)                  | Bảo mật        | **Must**         | Toàn bộ mật khẩu lưu trong PostgreSQL phải được băm (hash). API yêu cầu quyền quản trị phải chặn các truy cập không có token hợp lệ.     |
-| **NFR-04** | Khả năng triển khai (Deployability) | Triển khai     | **Must**         | Hệ thống phải có Dockerfile, docker-compose.yml và pipeline CI/CD tự động deploy lên môi trường production khi push code lên nhánh main. |
+| **NFR-02** | Tính hiệu năng (Performance)             | Hiệu năng      | **Should**       | Thời gian phản hồi của các API Backend (NestJS) thông thường không vượt quá 500ms.                                                       |
+| **NFR-03** | Tính bảo mật (Security)                  | Bảo mật        | **Must**         | Toàn bộ mật khẩu lưu trong PostgreSQL phải được băm (hash). API yêu cầu quyền quản trị phải chặn các truy cập không có token hợp lệ.     |
+| **NFR-04** | Tính triển khai (Deployability) | Triển khai     | **Must**         | Hệ thống phải có Dockerfile, docker-compose.yml và pipeline CI/CD tự động deploy lên môi trường production khi push code lên nhánh main. |
 
 ## 3. Sơ đồ Use-case tổng quát toàn hệ thống
 
@@ -54,7 +54,7 @@
 **Thông tin cơ bản:**
 
 - **Tên Use-case:** Xem chi tiết sản phẩm.
-- **Mã yêu cầu (Traceability):** FR-02 (Xem chi tiết sản phẩm); FR-01 (Xem menu); NFR-01 (Tính khả dụng); NFR-02 (Hiệu năng).
+- **Mã yêu cầu (Traceability):** FR-02 (Xem chi tiết sản phẩm); FR-01 (Xem menu); NFR-01 (Tính khả dụng); NFR-02 (Tính hiệu năng).
 - **Actor:** Khách hàng.
 - **Sự kiện kích hoạt (Trigger):** Khách hàng chọn một sản phẩm từ danh sách sản phẩm trên màn hình Menu.
 
@@ -68,7 +68,47 @@
 | **Tiền điều kiện** | - Hệ thống hiển thị danh sách sản phẩm (Menu) và cơ sở dữ liệu PostgreSQL đang hoạt động. |
 | **Hậu điều kiện** | - Thông tin tên, giá và các tùy chọn size/topping của sản phẩm được hiển thị cho khách hàng. |
 
-## 6. Đặc tả Use-case: Lập hóa đơn nhập hàng
+## 6. Đặc tả Use-case: Quản lý giỏ hàng
+![Sơ đồ Use-case quản lý giỏ hàng](../diagrams/use-case_FR-03.png)
+
+**Thông tin cơ bản:**
+
+- **Tên Use-case:** Quản lý giỏ hàng.
+- **Mã yêu cầu (Traceability):** FR-03 (Quản lý giỏ hàng); FR-05 (Đăng nhập hệ thống); NFR-01 (Tính khả dụng); NFR-02 (Tính hiệu năng).
+- **Actor:** Khách hàng.
+- **Sự kiện kích hoạt (Trigger):** Khách hàng đã chọn xong các sản phẩm cho mình và nhấn nút vào giỏ hàng.
+
+**Bảng đặc tả chi tiết:**
+
+| Thuộc tính | Đặc tả chi tiết |
+| :--- | :--- |
+| **Mục đích** | Cho khách hàng xem danh sách sản phẩm mà họ đã lựa chọn và tổng giá tiền của các sản phẩm đó. |
+| **Luồng chính** | 1. Kiểm tra đăng nhập nếu đó là khách hàng (thực hiện bởi use case đăng nhập hệ thống).<br>2. Hiển thị giao diện danh sách sản phẩm khách đã chọn mua.<br> 3. Khách hàng có thể xem những sản phẩm kèm chi tiết mà khách đã chọn.<br> 4. Khách hàng có thể xóa sản phẩm không đúng theo khách chọn.<br> 5. Khách hàng có thể xem được tổng giá của các sản phẩm đã chọn mua.<br> 6. Khách hàng có thể nhấn nút quay lại menu để lựa chọn tiếp.<br> 7. Khách hàng bấm xác nhận đặt hàng để thanh toán và đóng giao diện giỏ hàng. |
+| **Luồng phụ** | 1. Đăng nhập không hợp lệ.<br> 2. Khách hàng lỡ đặt hàng khi chưa chọn hết sản phẩm mình cần. |
+| **Tiền điều kiện** | 1. Đăng nhập phải là của tài khoản khách hàng.<br> 2. Khách hàng phải chọn sản phẩm đầu tiên trước khi vào giỏ hàng. |
+| **Hậu điều kiện** | 1. Giỏ hàng không được trống.<br> 2. Xác nhận đặt hàng trước khi chuyển sang thanh toán. |
+
+## 7. Đặc tả Use-case: Quản lý trạng thái đơn hàng
+![Sơ đồ Use-case quản lý trạng thái đơn hàng](../diagrams/use-case_FR-08.png)
+
+**Thông tin cơ bản:**
+
+- **Tên Use-case:** Quản lý trạng thái đơn hàng.
+- **Mã yêu cầu (Traceability):** FR-10 (Quản lý trạng thái đơn hàng); FR-05 (Đăng nhập hệ thống); FR-06 (Phân quyền truy cập); FR-07 (Đặt và thanh toán đơn hàng); NFR-03 (Tính bảo mật).
+- **Actor:** Nhân viên.
+- **Sự kiện kích hoạt (Trigger):** Khách hàng xác nhận đặt hàng và thực hiện thanh toán nếu có.
+
+**Bảng đặc tả chi tiết:**
+
+| Thuộc tính | Đặc tả chi tiết |
+| :--- | :--- |
+| **Mục đích** | Cho nhân viên xem danh sách sản phẩm đặt hàng của khách và cập nhật trạng thái đơn hàng. |
+| **Luồng chính** | 1. Kiểm tra đăng nhập nếu đó là nhân viên (thực hiện bởi use case đăng nhập hệ thống).<br> 2. Hiển thị giao diện trạng thái đơn hàng.<br> 3. Nhân viên kiểm tra và cập nhật trạng thái đơn hàng theo 3 trạng thái “PENDING”, “PAID”, “CANCELLED”.<br> 4. Xác nhận lưu trạng thái và đóng giao diện. |
+| **Luồng phụ** | 1. Đăng nhập không hợp lệ.<br> 2. Nhân viên chỉnh không đúng trạng thái đơn hàng theo dự kiến.<br> 3. Nhân viên không xác nhận lưu mỗi khi đóng giao diện. |
+| **Tiền điều kiện** | 1. Đăng nhập phải là của tài khoản nhân viên.<br> 2. Khách hàng phải xác nhận giỏ hàng để thanh toán. |
+| **Hậu điều kiện** | 1. Xác nhận lưu trước khi đóng giao diện. |
+
+## 8. Đặc tả Use-case: Lập hóa đơn nhập hàng
 ![Sơ đồ Use-case lập hóa đơn nhập hàng](../diagrams/use-case_FR-10.png)
 
 **Thông tin cơ bản:**
