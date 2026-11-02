@@ -147,3 +147,23 @@
 | **Luồng phụ** | **- Danh sách sản phẩm trống:** Chưa có dữ liệu sản phẩm trong cơ sở dữ liệu; hệ thống hiển thị thông báo hiện chưa có sản phẩm nào trên menu.<br>**- Lỗi hệ thống:** Không thể truy xuất dữ liệu từ PostgreSQL; hệ thống thông báo lỗi tải dữ liệu. |
 | **Tiền điều kiện** | - Hệ thống ứng dụng và cơ sở dữ liệu PostgreSQL đang hoạt động bình thường. |
 | **Hậu điều kiện** | - Danh sách sản phẩm được hiển thị thành công trên màn hình Menu cho khách hàng. |
+
+## 10. Đặc tả Use-case: Xem lịch sử đơn hàng
+![Sơ đồ Use-case xem lịch sử đơn hàng](../diagrams/use-case_FR-07.png)
+
+**Thông tin cơ bản**
+
+- **Tên Use-case:** Xem lịch sử đơn hàng.
+- **Mã yêu cầu (Traceability):** FR-07 (Xem lịch sử đơn hàng); NFR-01 (Tính khả dụng); NFR-02 (Tính hiệu năng).
+- **Actor:** Khách hàng.
+- **Sự kiện kích hoạt (Trigger):** Khách hàng đã đặt đơn và thanh toán muốn xem lại lịch sử.
+
+**Bảng đặc tả chi tiết:**
+
+| Thuộc tính | Đặc tả chi tiết |
+| :--- | :--- |
+| **Mục đích** | Khách hàng chọn xem lịch sử đơn hàng và xem trạng thái các đơn của mình. |
+| **Luồng chính** | 1. Kiểm tra đăng nhập nếu tài khoản đã đăng ký.<br>2. Hiển thị giao diện lịch sử đơn hàng.<br>3. khách hàng xem lại đc danh sách các đơn đã đặt, chi tiết từng món và trạng thái cuối cùng của đơn. |
+| **Luồng phụ** | 1. Khách hàng chưa có tài khoản. <br>2. Khách hàng chưa đặt và thanh toán đơn nào.|
+| **Tiền điều kiện** | 1. Khách hàng đã có tài khoản đã đăng ký và đăng nhập vào hệ thống. <br>2. Khách hàng phải có ít nhất một đơn hàng đã đặt và thanh toán. |
+| **Hậu điều kiện** | - Khách hàng xem được lịch sử đơn hàng của mình. |
