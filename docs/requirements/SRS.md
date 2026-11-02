@@ -47,3 +47,43 @@
 | **Luồng phụ**      | **- Đổi ý:** Tại bước 3, nếu khách bấm "Quay lại", hệ thống hủy mã QR, đưa khách về lại giỏ hàng và giữ nguyên các món đã chọn.<br>**- Quá hạn:** Sau 10 phút không có Webhook trả về, đơn hàng tự động chuyển sang "Đã hủy" do quá hạn. Khách phải đặt lại.<br>**- Sai số tiền:** Tại bước 5, nếu Webhook báo số tiền nhận nhỏ hơn bill thực tế, đơn chuyển "Thanh toán thiếu". Khách cần liên hệ quầy xử lý.<br>**- Lỗi database:** Tại bước 2, nếu PostgreSQL lỗi, báo "Lỗi do hệ thống" và giữ nguyên giỏ hàng.                                   |
 | **Tiền điều kiện** | - Khách hàng đã đăng nhập thành công.<br>- Giỏ hàng phải có sản phẩm.<br>- Đã kết nối thành công với API cổng thanh toán.                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | **Hậu điều kiện**  | - Hóa đơn được tạo thành công trong PostgreSQL.<br>- Giỏ hàng của khách hàng được làm trống.                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+
+## 5. Đặc tả Use-case: Xem chi tiết sản phẩm
+![Sơ đồ Use-case xem chi tiết sản phẩm](../diagrams/use-case_FR-02.png)
+
+**Thông tin cơ bản:**
+
+- **Tên Use-case:** Xem chi tiết sản phẩm.
+- **Mã yêu cầu (Traceability):** FR-02 (Xem chi tiết sản phẩm); FR-01 (Xem menu); NFR-01 (Tính khả dụng); NFR-02 (Hiệu năng).
+- **Actor:** Khách hàng.
+- **Sự kiện kích hoạt (Trigger):** Khách hàng chọn một sản phẩm từ danh sách sản phẩm trên màn hình Menu.
+
+**Bảng đặc tả chi tiết:**
+
+| Thuộc tính | Đặc tả chi tiết |
+| :--- | :--- |
+| **Mục đích** | Cho phép khách hàng xem thông tin chi tiết của sản phẩm (tên, giá) và lựa chọn các tùy chọn đi kèm (size, topping). |
+| **Luồng chính** | 1. Khách hàng chọn một sản phẩm từ danh sách trên trang "Menu".<br>2. Hệ thống truy xuất dữ liệu sản phẩm từ PostgreSQL.<br>3. Hệ thống hiển thị thông tin chi tiết gồm: tên sản phẩm, giá bán và các tùy chọn size/topping.<br>4. Khách hàng chọn size và topping mong muốn.<br>5. Hệ thống cập nhật mức giá hiển thị tương ứng với các tùy chọn đã chọn. |
+| **Luồng phụ** | **- Sản phẩm không tồn tại:** Không tìm thấy thông tin sản phẩm trong cơ sở dữ liệu; hệ thống thông báo lỗi và đưa khách hàng quay lại trang Menu.<br>**- Lỗi hệ thống:** Không thể truy xuất dữ liệu từ PostgreSQL; hệ thống thông báo lỗi tải dữ liệu. |
+| **Tiền điều kiện** | - Hệ thống hiển thị danh sách sản phẩm (Menu) và cơ sở dữ liệu PostgreSQL đang hoạt động. |
+| **Hậu điều kiện** | - Thông tin tên, giá và các tùy chọn size/topping của sản phẩm được hiển thị cho khách hàng. |
+
+## 6. Đặc tả Use-case: Lập hóa đơn nhập hàng
+![Sơ đồ Use-case lập hóa đơn nhập hàng](../diagrams/use-case_FR-10.png)
+
+**Thông tin cơ bản:**
+
+- **Tên Use-case:** Lập hóa đơn nhập hàng.
+- **Mã yêu cầu (Traceability):** FR-10 (Lập hóa đơn nhập hàng); FR-05 (Đăng nhập hệ thống); FR-06 (Phân quyền truy cập); NFR-03 (Bảo mật).
+- **Actor:** Quản lý.
+- **Sự kiện kích hoạt (Trigger):** Quản lý chọn chức năng "Lập hóa đơn nhập hàng".
+
+**Bảng đặc tả chi tiết:**
+
+| Thuộc tính | Đặc tả chi tiết |
+| :--- | :--- |
+| **Mục đích** | Cho phép Quản lý tạo hóa đơn nhập hàng; khi hóa đơn lưu thành công, số lượng tồn kho tương ứng tự động cộng dồn. |
+| **Luồng chính** | 1. Quản lý mở chức năng "Lập hóa đơn nhập hàng".<br>2. Hệ thống kiểm tra token JWT để xác thực phiên đăng nhập và quyền Quản lý.<br>3. Quản lý nhập thông tin hóa đơn nhập hàng và số lượng hàng nhập, sau đó nhấn lưu.<br>4. Hệ thống kiểm tra tính hợp lệ của thông tin hóa đơn.<br>5. Hệ thống lưu hóa đơn nhập hàng vào PostgreSQL và tự động cộng dồn số lượng tồn kho tương ứng.<br>6. Hệ thống thông báo lập hóa đơn nhập hàng thành công. |
+| **Luồng phụ** | **- Không có quyền truy cập:** Yêu cầu không có token JWT hợp lệ hoặc tài khoản không thuộc quyền Quản lý; API chặn truy cập theo quy định bảo mật.<br>**- Thông tin không hợp lệ:** Dữ liệu nhập thiếu hoặc số lượng không hợp lệ; hệ thống thông báo để Quản lý sửa lại.<br>**- Lỗi hệ thống:** Không thể lưu dữ liệu vào PostgreSQL; hệ thống thông báo tạo hóa đơn thất bại, số lượng tồn kho giữ nguyên không thay đổi. |
+| **Tiền điều kiện** | - Quản lý đã đăng nhập thành công vào hệ thống và có token JWT hợp lệ với quyền Quản lý.<br>- Hệ thống quản lý kho và cơ sở dữ liệu PostgreSQL hoạt động bình thường. |
+| **Hậu điều kiện** | - Hóa đơn nhập hàng mới được lưu thành công trong PostgreSQL.<br>- Số lượng tồn kho tương ứng được tự động cộng dồn. |
