@@ -127,3 +127,23 @@
 | **Luồng phụ** | **- Không có quyền truy cập:** Yêu cầu không có token JWT hợp lệ hoặc tài khoản không thuộc quyền Quản lý; API chặn truy cập theo quy định bảo mật.<br>**- Thông tin không hợp lệ:** Dữ liệu nhập thiếu hoặc số lượng không hợp lệ; hệ thống thông báo để Quản lý sửa lại.<br>**- Lỗi hệ thống:** Không thể lưu dữ liệu vào PostgreSQL; hệ thống thông báo tạo hóa đơn thất bại, số lượng tồn kho giữ nguyên không thay đổi. |
 | **Tiền điều kiện** | - Quản lý đã đăng nhập thành công vào hệ thống và có token JWT hợp lệ với quyền Quản lý.<br>- Hệ thống quản lý kho và cơ sở dữ liệu PostgreSQL hoạt động bình thường. |
 | **Hậu điều kiện** | - Hóa đơn nhập hàng mới được lưu thành công trong PostgreSQL.<br>- Số lượng tồn kho tương ứng được tự động cộng dồn. |
+
+## 9. Đặc tả Use-case: Xem menu
+![Sơ đồ Use-case xem menu](../diagrams/use-case_FR-01.png)
+
+**Thông tin cơ bản:**
+
+- **Tên Use-case:** Xem menu.
+- **Mã yêu cầu (Traceability):** FR-01 (Xem menu); NFR-01 (Tính khả dụng); NFR-02 (Tính hiệu năng).
+- **Actor:** Khách hàng.
+- **Sự kiện kích hoạt (Trigger):** Khách hàng truy cập vào ứng dụng BrewLite hoặc chọn chức năng "Menu" trên giao diện.
+
+**Bảng đặc tả chi tiết:**
+
+| Thuộc tính | Đặc tả chi tiết |
+| :--- | :--- |
+| **Mục đích** | Cho phép khách hàng xem danh sách các sản phẩm hiện có trên hệ thống BrewLite. |
+| **Luồng chính** | 1. Khách hàng mở trang "Menu" trên ứng dụng.<br>2. Hệ thống truy xuất danh sách sản phẩm từ cơ sở dữ liệu PostgreSQL.<br>3. Hệ thống hiển thị danh sách sản phẩm (gồm tên sản phẩm, giá bán, hình ảnh) lên giao diện cho khách hàng.<br>4. Khách hàng xem danh sách sản phẩm và có thể chọn một sản phẩm bất kỳ nếu muốn xem chi tiết. |
+| **Luồng phụ** | **- Danh sách sản phẩm trống:** Chưa có dữ liệu sản phẩm trong cơ sở dữ liệu; hệ thống hiển thị thông báo hiện chưa có sản phẩm nào trên menu.<br>**- Lỗi hệ thống:** Không thể truy xuất dữ liệu từ PostgreSQL; hệ thống thông báo lỗi tải dữ liệu. |
+| **Tiền điều kiện** | - Hệ thống ứng dụng và cơ sở dữ liệu PostgreSQL đang hoạt động bình thường. |
+| **Hậu điều kiện** | - Danh sách sản phẩm được hiển thị thành công trên màn hình Menu cho khách hàng. |
