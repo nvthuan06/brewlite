@@ -1,0 +1,41 @@
+@startuml product_detail
+actor Customer
+participant ":UI" as UI
+participant ":API" as API
+participant ":Database" as DB
+
+Customer -> UI : Chọn một sản phẩm trên trang "Menu"
+activate UI
+
+UI -> API : GET /products/{id}
+activate API
+
+API -> DB : SELECT Product, Size, Topping
+activate DB
+
+alt Tìm thấy sản phẩm
+    DB --> API : Trả về dữ liệu sản phẩm
+    API --> UI : OK 200 (Chi tiết sản phẩm)
+    UI --> Customer : Hiển thị tên, giá bán và tùy chọn size/topping
+    
+    opt Khách hàng chọn size và topping
+        Customer -> UI : Chọn size và topping mong muốn
+        UI -> UI : cập nhật mức giá\nhiển thị tương ứng;
+        UI --> Customer : Hiển thị mức giá mới
+    end
+
+else Sản phẩm không tồn tại
+    DB --> API : Không tìm thấy thông tin sản phẩm
+    API --> UI : BAD 404
+    UI --> Customer : Thông báo lỗi và quay lại trang Menu
+
+else Lỗi hệ thống
+    DB --> API : Lỗi không thể truy xuất dữ liệu
+    deactivate DB
+    API --> UI : BAD 500
+    UI --> Customer : Thông báo lỗi tải dữ liệu
+end
+
+deactivate API
+deactivate UI
+@enduml

@@ -50,7 +50,7 @@
 
 ## 5. Đặc tả Use-case: Xem chi tiết sản phẩm
 
-![Sơ đồ Use-case xem chi tiết sản phẩm](../diagrams/use-case_FR-02.png)
+![Sơ đồ Use-case xem chi tiết sản phẩm](../diagrams/use-case/use-case_FR-02.png)
 
 **Thông tin cơ bản:**
 
@@ -71,7 +71,7 @@
 
 ## 6. Đặc tả Use-case: Quản lý giỏ hàng
 
-![Sơ đồ Use-case quản lý giỏ hàng](../diagrams/use-case_FR-03.png)
+![Sơ đồ Use-case quản lý giỏ hàng](../diagrams/use-case/use-case_FR-03.png)
 
 **Thông tin cơ bản:**
 
@@ -92,7 +92,7 @@
 
 ## 7. Đặc tả Use-case: Quản lý trạng thái đơn hàng
 
-![Sơ đồ Use-case quản lý trạng thái đơn hàng](../diagrams/use-case_FR-08.png)
+![Sơ đồ Use-case quản lý trạng thái đơn hàng](../diagrams/use-case/use-case_FR-08.png)
 
 **Thông tin cơ bản:**
 
@@ -113,7 +113,7 @@
 
 ## 8. Đặc tả Use-case: Lập hóa đơn nhập hàng
 
-![Sơ đồ Use-case lập hóa đơn nhập hàng](../diagrams/use-case_FR-10.png)
+![Sơ đồ Use-case lập hóa đơn nhập hàng](../diagrams/use-case/use-case_FR-10.png)
 
 **Thông tin cơ bản:**
 
@@ -134,7 +134,7 @@
 
 ## 9. Đặc tả Use-case: Xem menu
 
-![Sơ đồ Use-case xem menu](../diagrams/use-case_FR-01.png)
+![Sơ đồ Use-case xem menu](../diagrams/use-case/use-case_FR-01.png)
 
 **Thông tin cơ bản:**
 
@@ -155,7 +155,7 @@
 
 ## 10. Đặc tả Use-case: Xem lịch sử đơn hàng
 
-![Sơ đồ Use-case xem lịch sử đơn hàng](../diagrams/use-case_FR-07.png)
+![Sơ đồ Use-case xem lịch sử đơn hàng](../diagrams/use-case/use-case_FR-07.png)
 
 **Thông tin cơ bản**
 
