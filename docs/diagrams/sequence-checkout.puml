@@ -1,0 +1,54 @@
+@startuml checkout
+actor Customer
+participant ":UI" as UI
+participant ":API" as API
+participant ":Database" as DB
+participant ":Payment Service" as Payment
+
+Customer -> UI : Bấm nút "Thanh toán"
+activate UI
+
+UI -> API : POST /order/checkout (Bear JWT, idempotency)
+activate API
+
+API -> API : kiểm tra\nJWT và\nvalidate\ndữ liệu;
+
+API -> DB : Truy vấn idempotency
+activate DB
+DB --> API : Trả về kết quả
+deactivate DB
+
+alt Có(Gửi lại yêu cầu)
+    API --> UI : Quay lại trạng thái chưa thanh toán.
+else Chưa(Tạo order mới)
+    API -> DB : INSERT Order
+    activate DB
+    DB --> API : Trả về orderId
+    deactivate DB
+    
+    API -> Payment : Gửi yêu cầu thanh toán
+    activate Payment
+    
+    alt Thanh toán thành công
+        Payment --> API : Payment Success
+        
+        API -> DB : UPDATE Product
+        API -> DB : UPDATE Order(status: PAID)
+        
+        API --> UI : OK 200
+        UI --> Customer : Hiển thị "Thanh toán thành công"
+        
+    else Thanh toán thất bại
+        Payment --> API : Payment Fail
+        deactivate Payment
+        
+        API -> DB : UPDATE Order(status: PAY_FAIL)
+        
+        API --> UI : BAD 400
+        UI --> Customer : Hiển thị "Thanh toán thất bại"
+    end
+end
+
+deactivate API
+deactivate UI
+@enduml
