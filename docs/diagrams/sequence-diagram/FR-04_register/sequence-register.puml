@@ -1,0 +1,63 @@
+@startuml sequence-register
+title Sequence Diagram - Đăng ký tài khoản
+
+autonumber
+
+actor "Khách hàng mới" as Customer
+participant ":UI" as UI
+participant ":API" as API
+participant ":Database" as DB
+
+Customer -> UI: Truy cập trang đăng ký
+activate UI
+UI --> Customer: Hiển thị biểu mẫu đăng ký
+
+Customer -> UI: Nhập email, mật khẩu và xác nhận mật khẩu
+
+alt Mật khẩu xác nhận không khớp
+    UI --> Customer: Thông báo mật khẩu không khớp
+else Thông tin hợp lệ phía UI
+    UI -> API: POST /auth/register
+    activate API
+
+    API -> API: Kiểm tra email và mật khẩu
+
+    alt Dữ liệu không hợp lệ
+        API --> UI: 400 Bad Request
+        UI --> Customer: Hiển thị lỗi dữ liệu
+    else Dữ liệu hợp lệ
+        API -> DB: Tìm tài khoản theo email
+        activate DB
+        DB --> API: Kết quả tìm kiếm
+        deactivate DB
+
+        alt Email đã tồn tại
+            API --> UI: 409 Conflict
+            UI --> Customer: Email đã được sử dụng
+        else Email chưa tồn tại
+            API -> API: Băm mật khẩu bằng bcrypt
+
+            API -> DB: Lưu tài khoản với password hash
+            activate DB
+
+            alt Lưu thành công
+                DB --> API: Thông tin tài khoản mới
+                API --> UI: 201 Created
+                UI --> Customer: Thông báo đăng ký thành công
+                UI -> UI: Chuyển đến trang đăng nhập
+            else Lỗi lưu dữ liệu
+                DB --> API: Lỗi PostgreSQL
+                API --> UI: Thông báo lỗi hệ thống
+                UI --> Customer: Đăng ký thất bại
+            end
+
+            deactivate DB
+        end
+    end
+
+    deactivate API
+end
+
+deactivate UI
+
+@enduml
