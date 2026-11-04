@@ -1,0 +1,59 @@
+@startuml
+actor Staff
+participant ":UI" as UI
+participant ":API" as API
+participant ":Database" as DB
+
+Staff -> UI : Mở giao diện trạng thái đơn hàng
+activate UI
+
+UI -> API : GET /orders (Bearer JWT)
+activate API
+
+API -> API : Kiểm tra JWT\nvà quyền\nNhân viên
+
+alt Đăng nhập không hợp lệ / Không đủ quyền
+    API --> UI : 401/403 Forbidden
+    deactivate API
+    UI --> Staff : Thông báo "Đăng nhập không hợp lệ"
+else Hợp lệ
+    API -> DB : SELECT danh sách đơn hàng
+    activate DB
+    DB --> API : Trả về danh sách đơn hàng
+    deactivate DB
+    
+    API --> UI : OK 200 (Danh sách đơn hàng)
+    deactivate API
+    
+    UI --> Staff : Hiển thị danh sách và trạng thái đơn hàng
+    
+    Staff -> UI : Kiểm tra và chọn trạng thái mới (PENDING / PAID / CANCELLED)
+    
+    alt Không xác nhận lưu khi đóng giao diện
+        Staff -> UI : Đóng giao diện không bấm lưu
+        UI --> Staff : Hủy thay đổi và đóng giao diện
+    else Bấm xác nhận lưu trạng thái
+        Staff -> UI : Bấm "Xác nhận lưu"
+        UI -> API : PATCH /orders/:id/status (Bearer JWT, status)
+        activate API
+        
+        API -> API : Kiểm tra tính hợp lệ\ncủa trạng thái
+        
+        alt Chỉnh không đúng trạng thái dự kiến
+            API --> UI : BAD 400
+            UI --> Staff : Hiển thị lỗi "Trạng thái không hợp lệ"
+        else Trạng thái hợp lệ
+            API -> DB : UPDATE Order(status)
+            activate DB
+            DB --> API : Lưu thành công
+            deactivate DB
+            
+            API --> UI : OK 200
+            deactivate API
+            UI --> Staff : Thông báo lưu thành công và đóng giao diện
+        end
+    end
+end
+
+deactivate UI
+@enduml
