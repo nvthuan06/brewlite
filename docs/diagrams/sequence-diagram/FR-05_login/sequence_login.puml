@@ -1,0 +1,54 @@
+@startuml sequence_login
+title Sequence Diagram - Đăng nhập hệ thống
+
+autonumber
+
+actor "Khách hàng" as Customer
+participant ":UI" as UI
+participant ":API" as API
+participant ":Database" as DB
+
+Customer -> UI: Truy cập trang đăng nhập
+activate UI
+UI --> Customer: Hiển thị biểu mẫu đăng nhập
+
+Customer -> UI: Nhập email và mật khẩu
+
+UI -> API: POST /auth/login
+activate API
+
+API -> DB: Tìm tài khoản theo email
+activate DB
+DB --> API: Thông tin tài khoản hoặc không tìm thấy
+deactivate DB
+
+alt Không tìm thấy tài khoản
+    API --> UI: 401 Unauthorized
+    UI --> Customer: Email hoặc mật khẩu không đúng
+
+else Tìm thấy tài khoản
+    API -> API: So sánh mật khẩu bằng bcrypt.compare()
+
+    alt Mật khẩu không đúng
+        API --> UI: 401 Unauthorized
+        UI --> Customer: Email hoặc mật khẩu không đúng
+
+    else Mật khẩu chính xác
+        API -> API: Tạo JWT access_token
+        API --> UI: 200 OK + access_token
+        deactivate API
+
+        UI -> UI: Lưu JWT và cập nhật trạng thái đăng nhập
+        UI --> Customer: Thông báo đăng nhập thành công
+
+        opt Khách hàng chọn đăng xuất
+            Customer -> UI: Nhấn "Đăng xuất"
+            UI -> UI: Xóa JWT và trạng thái đăng nhập
+            UI --> Customer: Chuyển về trang chủ
+        end
+    end
+end
+
+deactivate UI
+
+@enduml

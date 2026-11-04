@@ -1,0 +1,42 @@
+@startuml
+title Sequence Diagram - Xem lịch sử đơn hàng
+
+actor KH as "Khách hàng"
+participant FE as "Frontend (/HistoryOrders)"
+participant AUTH as "JWT Guard"
+participant CTRL as "OrdersController"
+participant SVC as "OrdersService"
+database DB as "PostgreSQL"
+
+KH -> FE: Mở trang /HistoryOrders
+FE -> FE: Kiểm tra accessToken trong AuthContext
+
+alt Chưa đăng nhập
+    FE --> KH: Hiển thị yêu cầu đăng nhập
+    note over FE
+        Không gửi request đến Backend
+    end note
+else Đã đăng nhập
+    FE -> CTRL: GET /orders/me\nAuthorization: Bearer JWT
+    CTRL -> AUTH: Xác thực JWT
+
+    alt JWT hết hạn hoặc không hợp lệ
+        AUTH --> FE: HTTP 401 Unauthorized
+        FE --> KH: Hiển thị thông báo phiên đăng nhập hết hạn
+    else JWT hợp lệ
+        AUTH --> CTRL: Hợp lệ, gắn userId vào request
+        CTRL -> SVC: getMyOrders(userId)
+        SVC -> DB: Tìm đơn theo userId,\nkèm items và product
+        DB --> SVC: Danh sách đơn hàng
+        SVC --> CTRL: Trả danh sách đơn
+        CTRL --> FE: HTTP 200 + JSON đơn hàng
+
+        alt Không có đơn hàng
+            FE --> KH: Hiển thị "Bạn chưa có đơn hàng nào"
+        else Có đơn hàng
+            FE --> KH: Hiển thị ngày, trạng thái,\nmón, số lượng và tổng tiền
+        end
+    end
+end
+
+@enduml

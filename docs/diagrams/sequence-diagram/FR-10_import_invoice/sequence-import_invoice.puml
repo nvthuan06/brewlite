@@ -1,0 +1,44 @@
+@startuml import_invoice
+actor Manager
+participant ":UI" as UI
+participant ":API" as API
+participant ":Database" as DB
+
+Manager -> UI : Mở "Lập hóa đơn nhập hàng",\nnhập thông tin, số lượng và nhấn "Lưu"
+activate UI
+
+UI -> API : POST /import-invoices (Bear JWT)
+activate API
+
+API -> API : kiểm tra\nJWT và\nquyền Quản lý;
+
+alt Không có quyền truy cập
+    API --> UI : BAD 401/403 (Chặn truy cập)
+    UI --> Manager : Thông báo không có quyền truy cập
+else Quyền Quản lý hợp lệ
+    API -> API : kiểm tra\ntính hợp lệ của\nthông tin hóa đơn;
+    
+    alt Thông tin không hợp lệ
+        API --> UI : BAD 400
+        UI --> Manager : Thông báo để Quản lý sửa lại
+    else Thông tin hợp lệ
+        API -> DB : INSERT Hóa đơn nhập hàng
+        activate DB
+        API -> DB : UPDATE Cộng dồn số lượng tồn kho
+        
+        alt Lưu thành công
+            DB --> API : Lưu hóa đơn và cộng dồn tồn kho thành công
+            API --> UI : OK 200
+            UI --> Manager : Thông báo lập hóa đơn nhập hàng thành công
+        else Lỗi hệ thống
+            DB --> API : Lỗi không thể lưu dữ liệu (Giữ nguyên tồn kho)
+            deactivate DB
+            API --> UI : BAD 500
+            UI --> Manager : Thông báo tạo hóa đơn thất bại
+        end
+    end
+end
+
+deactivate API
+deactivate UI
+@enduml

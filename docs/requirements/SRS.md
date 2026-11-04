@@ -50,7 +50,7 @@
 
 ## 5. Đặc tả Use-case: Xem chi tiết sản phẩm
 
-![Sơ đồ Use-case xem chi tiết sản phẩm](../diagrams/use-case_FR-02.png)
+![Sơ đồ Use-case xem chi tiết sản phẩm](../diagrams/use-case/use-case_FR-02.png)
 
 **Thông tin cơ bản:**
 
@@ -71,7 +71,7 @@
 
 ## 6. Đặc tả Use-case: Quản lý giỏ hàng
 
-![Sơ đồ Use-case quản lý giỏ hàng](../diagrams/use-case_FR-03.png)
+![Sơ đồ Use-case quản lý giỏ hàng](../diagrams/use-case/use-case_FR-03.png)
 
 **Thông tin cơ bản:**
 
@@ -92,12 +92,12 @@
 
 ## 7. Đặc tả Use-case: Quản lý trạng thái đơn hàng
 
-![Sơ đồ Use-case quản lý trạng thái đơn hàng](../diagrams/use-case_FR-08.png)
+![Sơ đồ Use-case quản lý trạng thái đơn hàng](../diagrams/use-case/use-case_FR-08.png)
 
 **Thông tin cơ bản:**
 
 - **Tên Use-case:** Quản lý trạng thái đơn hàng.
-- **Mã yêu cầu (Traceability):** FR-10 (Quản lý trạng thái đơn hàng); FR-05 (Đăng nhập hệ thống); FR-06 (Phân quyền truy cập); FR-07 (Đặt và thanh toán đơn hàng); NFR-03 (Tính bảo mật).
+- **Mã yêu cầu (Traceability):** FR-08 (Quản lý trạng thái đơn hàng); FR-05 (Đăng nhập hệ thống); FR-06 (Phân quyền truy cập); FR-07 (Đặt và thanh toán đơn hàng); NFR-03 (Tính bảo mật).
 - **Actor:** Nhân viên.
 - **Sự kiện kích hoạt (Trigger):** Khách hàng xác nhận đặt hàng và thực hiện thanh toán nếu có.
 
@@ -113,7 +113,7 @@
 
 ## 8. Đặc tả Use-case: Lập hóa đơn nhập hàng
 
-![Sơ đồ Use-case lập hóa đơn nhập hàng](../diagrams/use-case_FR-10.png)
+![Sơ đồ Use-case lập hóa đơn nhập hàng](../diagrams/use-case/use-case_FR-10.png)
 
 **Thông tin cơ bản:**
 
@@ -134,7 +134,7 @@
 
 ## 9. Đặc tả Use-case: Xem menu
 
-![Sơ đồ Use-case xem menu](../diagrams/use-case_FR-01.png)
+![Sơ đồ Use-case xem menu](../diagrams/use-case/use-case_FR-01.png)
 
 **Thông tin cơ bản:**
 
@@ -155,7 +155,7 @@
 
 ## 10. Đặc tả Use-case: Xem lịch sử đơn hàng
 
-![Sơ đồ Use-case xem lịch sử đơn hàng](../diagrams/use-case_FR-07.png)
+![Sơ đồ Use-case xem lịch sử đơn hàng](../diagrams/use-case/use-case_FR-07.png)
 
 **Thông tin cơ bản**
 
@@ -173,3 +173,45 @@
 | **Luồng phụ**      | 1. Khách hàng chưa có tài khoản. <br>2. Khách hàng chưa đặt và thanh toán đơn nào.                                                                                                                  |
 | **Tiền điều kiện** | 1. Khách hàng đã có tài khoản đã đăng ký và đăng nhập vào hệ thống. <br>2. Khách hàng phải có ít nhất một đơn hàng đã đặt và thanh toán.                                                            |
 | **Hậu điều kiện**  | - Khách hàng xem được lịch sử đơn hàng của mình.                                                                                                                                                    |
+
+## 11. Đặc tả Use-case: Đăng ký tài khoản
+
+![Sơ đồ Use-case đăng ký tài khoản](../diagrams/use-case/use-case_FR-04.png)
+
+**Thông tin cơ bản:**
+
+- **Tên Use-case:** Đăng ký tài khoản.
+- **Mã yêu cầu (Traceability):** FR-04 (Đăng ký tài khoản); NFR-03 (Bảo mật).
+- **Actor:** Khách hàng mới.
+- **Sự kiện kích hoạt (Trigger):** Khách hàng mới chọn chức năng "Đăng ký".
+
+**Bảng đặc tả chi tiết:**
+
+| Thuộc tính         | Đặc tả chi tiết                                                                                                                                                                                                                                                                                                                                              |
+| :----------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Mục đích**       | Cho phép khách hàng mới tạo tài khoản sử dụng hệ thống BrewLite; mật khẩu được băm trước khi lưu vào PostgreSQL.                                                                                                                                                                                                                                             |
+| **Luồng chính**    | 1. Khách hàng mở trang "Đăng ký".<br>2. Khách hàng nhập email, mật khẩu và xác nhận mật khẩu.<br>3. Hệ thống kiểm tra tính hợp lệ của thông tin và email chưa được sử dụng.<br>4. Hệ thống băm mật khẩu và lưu tài khoản mới vào PostgreSQL.<br>5. Hệ thống thông báo đăng ký thành công và chuyển khách hàng đến trang đăng nhập.                           |
+| **Luồng phụ**      | **- Email đã tồn tại:** Hệ thống thông báo email đã được đăng ký và yêu cầu sử dụng email khác.<br>**- Thông tin không hợp lệ:** Email sai định dạng, mật khẩu dưới 8 ký tự hoặc mật khẩu xác nhận không khớp; hệ thống thông báo để khách hàng sửa.<br>**- Lỗi hệ thống:** Không thể lưu dữ liệu; hệ thống thông báo đăng ký thất bại, không tạo tài khoản. |
+| **Tiền điều kiện** | - Khách hàng chưa có tài khoản với email đăng ký.<br>- Hệ thống đăng ký và cơ sở dữ liệu hoạt động.                                                                                                                                                                                                                                                          |
+| **Hậu điều kiện**  | - Tài khoản mới được lưu trong PostgreSQL.<br>- Chỉ lưu mật khẩu đã băm, không lưu mật khẩu gốc.                                                                                                                                                                                                                                                             |
+
+## 12. Đặc tả Use-case: Đăng nhập hệ thống
+
+![Sơ đồ Use-case đăng nhập hệ thống](../diagrams/use-case/use-case_FR-05.png)
+
+**Thông tin cơ bản:**
+
+- **Tên Use-case:** Đăng nhập hệ thống.
+- **Mã yêu cầu (Traceability):** FR-05 (Đăng nhập hệ thống); NFR-03 (Bảo mật).
+- **Actor:** Khách hàng.
+- **Sự kiện kích hoạt (Trigger):** Khách hàng chọn chức năng "Đăng nhập".
+
+**Bảng đặc tả chi tiết:**
+
+| Thuộc tính         | Đặc tả chi tiết                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| :----------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Mục đích**       | Cho phép khách hàng đăng nhập vào hệ thống BrewLite bằng tài khoản hợp lệ và nhận JWT để xác thực các yêu cầu tiếp theo.                                                                                                                                                                                                                                                                                                                                     |
+| **Luồng chính**    | 1. Khách hàng mở trang "Đăng nhập".<br>2. Khách hàng nhập email và mật khẩu.<br>3. Hệ thống kiểm tra thông tin tài khoản và đối chiếu mật khẩu với giá trị băm đã lưu trong PostgreSQL.<br>4. Nếu thông tin hợp lệ, hệ thống tạo và trả về token JWT.<br>5. Hệ thống cập nhật trạng thái đăng nhập và chuyển khách hàng đến giao diện phù hợp.                                                                                                               |
+| **Luồng phụ**      | **- Sai email hoặc mật khẩu:** Hệ thống thông báo thông tin đăng nhập không hợp lệ và cho phép nhập lại.<br>**- Thiếu thông tin:** Hệ thống yêu cầu nhập đầy đủ email và mật khẩu.<br>**- Lỗi hệ thống:** Không thể xác thực tài khoản hoặc cấp JWT; hệ thống thông báo đăng nhập thất bại.<br>**- Đăng xuất:** Khi khách hàng đã đăng nhập chọn "Đăng xuất", hệ thống xóa JWT và trạng thái đăng nhập phía ứng dụng, sau đó chuyển khách hàng về Trang chủ. |
+| **Tiền điều kiện** | - Khách hàng đã có tài khoản trên BrewLite.<br>- Hệ thống xác thực đang hoạt động.                                                                                                                                                                                                                                                                                                                                                                           |
+| **Hậu điều kiện**  | - Khách hàng đăng nhập thành công và nhận được JWT hợp lệ.<br>- Khách hàng có thể sử dụng các chức năng yêu cầu xác thực.                                                                                                                                                                                                                                                                                                                                    |

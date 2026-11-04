@@ -1,0 +1,35 @@
+@startuml view_menu
+actor Customer
+participant ":UI" as UI
+participant ":API" as API
+participant ":Database" as DB
+
+Customer -> UI : Mở trang "Menu"
+activate UI
+
+UI -> API : GET Products
+activate API
+
+API -> DB : SELECT Products
+activate DB
+
+alt Có dữ liệu sản phẩm
+DB --> API : Trả về danh sách sản phẩm
+API --> UI : OK 200
+UI --> Customer : Hiển thị danh sách sản phẩm\n(tên, giá bán, hình ảnh)
+
+else Danh sách sản phẩm trống 
+DB --> API : Trả về danh sách rỗng
+API --> UI : OK 200 
+UI --> Customer : Hiển thị "Hiện chưa có sản phẩm nào trên menu"
+
+else Lỗi hệ thống 
+DB --> API : Lỗi truy xuất dữ liệu
+deactivate DB
+API --> UI : ERROR 500
+UI --> Customer : Hiển thị "Lỗi truy xuất dữ liệu"
+end
+
+deactivate API
+deactivate UI
+@enduml

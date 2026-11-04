@@ -1,0 +1,51 @@
+@startuml
+actor Customer
+participant ":UI" as UI
+participant ":API" as API
+participant ":Database" as DB
+
+Customer -> UI : Nhấn nút vào giỏ hàng
+activate UI
+
+UI -> API : GET /cart (Bearer JWT)
+activate API
+
+API -> API : Kiểm tra\nJWT khách hàng
+
+alt Đăng nhập không hợp lệ
+    API --> UI : 401 Unauthorized
+    UI --> Customer : Hiển thị "Đăng nhập không hợp lệ"
+else Đăng nhập hợp lệ
+    API -> DB : SELECT danh sách sản phẩm đã chọn
+    activate DB
+    DB --> API : Trả về dữ liệu giỏ hàng
+    deactivate DB
+    
+    API --> UI : OK 200 (Danh sách sản phẩm, tổng giá tiền)
+    deactivate API
+    
+    UI --> Customer : Hiển thị danh sách sản phẩm, chi tiết và tổng giá
+    
+    opt Xóa sản phẩm không đúng
+        Customer -> UI : Chọn xóa sản phẩm
+        UI -> API : DELETE /cart/item (Bearer JWT)
+        activate API
+        API -> DB : DELETE / UPDATE Cart
+        activate DB
+        DB --> API : Trả về kết quả
+        deactivate DB
+        API --> UI : OK 200 (Cập nhật tổng tiền mới)
+        deactivate API
+        UI --> Customer : Cập nhật danh sách và tổng giá tiền
+    end
+    
+    alt Chọn thêm món (Hoặc lỡ đặt khi chưa chọn hết)
+        Customer -> UI : Nhấn nút "Quay lại Menu"
+        UI --> Customer : Chuyển về giao diện Menu để lựa chọn tiếp
+    else Xác nhận đặt hàng
+        Customer -> UI : Bấm "Xác nhận đặt hàng"
+        UI --> Customer : Đóng giao diện giỏ hàng & chuyển sang thanh toán
+    end
+end
+
+deactivate UI
