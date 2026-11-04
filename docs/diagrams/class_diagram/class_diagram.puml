@@ -1,0 +1,121 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam roundcorner 5
+skinparam class {
+    BackgroundColor White
+    ArrowColor Black
+    BorderColor #333333
+}
+
+' ================= ENUMS =================
+enum TrangThaiDonHang <<enumeration>> {
+    DA_NHAN
+    DANG_CHUAN_BI
+    HOAN_TAT
+    HUY
+    THAT_BAI
+}
+
+enum SIZE <<enumeration>> {
+    M
+    S
+    XL
+}
+
+enum TOPPING <<enumeration>> {
+    tran_chau
+    kem
+    pho_mai
+}
+
+enum LoaiDiem <<enumeration>> {
+    TICH_DIEM
+    TIEU_DIEM
+}
+
+enum TrangThaiThanhToan <<enumeration>> {
+    PENDING
+    FAIL_PAYMENT
+    SUCCESS_PAYMENT
+}
+
+enum PhuongThucThanhToan <<enumeration>> {
+    Chuyen_khoan_ma_qr
+}
+
+' ================= CLASSES =================
+class User {
+    - idUser: UUID
+    - tenUser: string
+    - email: string
+    - passwordHash: string
+    - vaiTro: string
+    - diemThuong: number
+}
+
+class Order {
+    - idOrder: UUID
+    - tongTien: Decimal
+    - idempotencyKey: String
+    - ngayDatHang: DateTime
+    - trangThai: TrangThaiDonHang
+}
+
+class OrderItem {
+    - id: UUID
+    - soLuong: number
+    - thanhTien: Decimal
+    - size: SIZE
+    - topping: TOPPING
+}
+
+class Product {
+    - idProduct: UUID
+    - tenProduct: String
+    - giaProduct: Decimal
+    - soLuong: number
+    - trangThaiBan: boolen
+}
+
+class LoyaltyTransaction {
+    - id: UUID
+    - dungDiem: LoaiDiem
+    - soDiem: number
+    - ngayGiaoDich: DateTime
+}
+
+class Payment {
+    - idPayment: UUID
+    - soTien: Decimal
+    - ngayThanhToan: DateTime
+    - phuongThuc: PhuongThucThanhToan
+    - trangThai: TrangThaiThanhToan
+}
+
+class Promotion {
+    - idPromotion: UUID
+    - maPromotion: string
+    - giamGia: Decimal
+    - hanPromotion: DateTime
+    - trangThaiHoatDong: boolen
+}
+
+' ================= RELATIONSHIPS =================
+User "1" -right- "*" Order : Có
+Order "1" -right- "1..*" OrderItem : Bao gồm
+OrderItem "*" -right- "1" Product : Có
+
+User "1" -down- "*" LoyaltyTransaction : Thuộc
+Order "1" -down- "1" LoyaltyTransaction : Có
+
+Order "1" -down- "1" Payment : Yêu Cầu
+Order "1" -down- "0..*" Promotion : Áp dụng 
+
+' ================= LIÊN KẾT ENUM =================
+Order -up- TrangThaiDonHang
+OrderItem -up- SIZE
+OrderItem -up- TOPPING
+LoyaltyTransaction -down- LoaiDiem
+Payment -down- TrangThaiThanhToan
+Payment -down- PhuongThucThanhToan
+@enduml
