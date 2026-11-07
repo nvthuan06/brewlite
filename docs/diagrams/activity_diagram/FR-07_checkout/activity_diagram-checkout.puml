@@ -1,0 +1,76 @@
+@startuml
+title Đặt và thanh toán đơn hàng
+
+skinparam monochrome true
+skinparam shadowing false
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderColor black
+skinparam ArrowColor black
+skinparam SwimlaneBorderColor black
+skinparam defaultTextAlignment center
+skinparam ConditionEndStyle hline
+skinparam nodesep 50
+skinparam ranksep 40
+
+|Customer|
+|UI|
+|System|
+|Payment Service|
+
+|Customer|
+start
+:Bấm vào "Giỏ hàng";
+
+|UI|
+repeat :Hiển thị giỏ hàng;
+
+|Customer|
+:Bấm "thanh toán";
+
+|UI|
+:Hiển thị các phương thức\nthanh toán;
+
+|Customer|
+:Chọn phương thức\nthanh toán;
+
+|System|
+:Kiểm tra token;
+
+|UI|
+backward :Hiển thị form đăng nhập\n&\nNhập thông tin đăng nhập;
+|System|
+repeat while () is (Chưa đăng nhập) not (Đã đăng nhập)
+
+:Kiểm tra tồn kho;
+if () then (Không đủ số lượng)
+  |UI|
+  :Hiển thị cảnh báo;
+  |Customer|
+  :Chỉnh lại giỏ hàng;
+  stop
+else (Đủ số lượng)
+  |System|
+  repeat :Tạo order;
+  
+  |Payment Service|
+  :Kiểm tra thanh toán;
+  
+  |Customer|
+  backward :Hiển thị lỗi thanh toán\n&\nBấm thử lại / Chọn lại PTTT;
+  |System|
+  repeat while () is (Thanh toán thất bại) not (Thanh toán thành công)
+
+  |System|
+  fork
+    :Trừ kho hàng;
+  fork again
+    :Cập nhật trạng thái order;
+  end fork
+  :Xóa giỏ hàng;
+  :Lưu database;
+  
+  |UI|
+  :Hiển thị trạng thái đơn;
+  stop
