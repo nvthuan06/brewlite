@@ -1,0 +1,74 @@
+@startuml
+|Nhân viên|
+start
+:Chọn nút "Quản lý\ntrạng thái đơn hàng";
+
+|Frontend|
+:Hiện form đăng\nnhập;
+
+repeat
+  |Nhân viên|
+  :Nhập thông tin\nđăng nhập;
+  
+  |Frontend|
+  :Gửi thông tin đăng\nnhập;
+  
+  |Backend|
+  :Kiểm tra đăng nhập;
+  
+  if () then ([Không phải nhân viên])
+    :Đăng nhập\nkhông hợp lệ;
+    
+    |Frontend|
+    :Thông báo đăng\nnhập không hợp\nlệ;
+  else ([Là nhân viên])
+    |Backend|
+    :Đăng nhập hợp lệ;
+    :Cập nhật danh\nsách đơn hàng\nhiện tại;
+    
+    |Frontend|
+    :Hiển thị giao diện\nQuản lý trạng thái\nđơn hàng;
+    break
+  endif
+repeat while ()
+
+|Frontend|
+if () then ([Đơn hàng trống])
+  :Thông báo chưa\ncó đơn hàng;
+else ([Đơn hàng không trống])
+  :Mở danh sách đơn\nhàng;
+  
+  repeat
+    |Nhân viên|
+    :Thay đổi trạng\nthái 1 đơn hàng;
+    
+    |Frontend|
+    if () then ([Trùng trạng thái hiện tại])
+      :Thông báo trùng\ntrạng thái hiện tại;
+    else ([Không trùng trạng thái hiện tại])
+      :Gửi api để cập nhật\ntrạng thái đơn hàng;
+      
+      |Backend|
+      :Truy vấn đơn hàng\ncần cập nhật trạng\nthái;
+      :Cập nhật và lưu\ntrạng thái đơn\nhàng;
+      
+      |Frontend|
+      :Thông báo cập nhật\ntrạng thái đơn hàng\nthành công;
+      
+      if () then ()
+        ' Vòng lặp quay lại Thay đổi trạng thái 1 đơn hàng
+      else ()
+        ' Thoát khỏi vòng lặp để xuống nút Thoát
+        break
+      endif
+    endif
+  repeat while ()
+endif
+
+|Nhân viên|
+:Nhấn nút\n"Thoát";
+
+|Frontend|
+:Tắt giao diện;
+stop
+@enduml
