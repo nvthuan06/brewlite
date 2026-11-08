@@ -6,23 +6,7 @@ Hệ thống **BrewLite** được thiết kế dựa trên sự kết hợp gi�
 
 ### 1.1. Sơ đồ Kiến trúc Tổng thể (C4 Container Level)
 
-```plantuml
-@startuml C4_Container_BrewLite
-actor "Khách hàng / Nhân viên / Quản lý" as User
-
-rectangle "Hệ thống BrewLite (Monorepo)" {
-    component "Frontend Web App\n[apps/web: Next.js / PWA]" as WebApp
-    component "Backend REST API\n[apps/api: NestJS Modular]" as API
-    database "Cơ sở dữ liệu\n[PostgreSQL + TypeORM]" as DB
-    component "Dịch vụ Thanh toán Mô phỏng\n[MockPaymentService]" as Payment
-}
-
-User --> WebApp : Truy cập giao diện (HTTPS)
-WebApp --> API : Gọi RESTful API (JSON / HTTPS + Bearer JWT + Idempotency-Key)
-API --> DB : Truy vấn, lưu Idempotency & Transaction (TypeORM / TCP)
-API <--> Payment : Điều phối & Nhận kết quả thanh toán (PAID / PAYMENT_FAILED)
-@enduml
-```
+![Sơ đồ C4 Container Level](../diagrams/c4-container.png)
 
 ### 1.2. Kiến trúc Phân lớp trong mỗi Module (Layered Architecture)
 
