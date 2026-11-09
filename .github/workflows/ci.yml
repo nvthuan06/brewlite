@@ -17,7 +17,9 @@ jobs:
 
         # Bước 1
       - name: Cài đặt thư viện
-        run: npm install
+        run: |
+          npm install --prefix apps/api
+          npm install --prefix apps/web
 
         # Bước 2
       - name: Kiểm tra mã nguồn
