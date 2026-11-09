@@ -1,0 +1,91 @@
+@startuml
+' BREWLITE - UML Deployment Diagram (Task 3.2)
+' CI and Production environment
+' Design target: Render Docker build, Cloudflare Tunnel, Render PostgreSQL
+
+left to right direction
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam linetype ortho
+skinparam nodesep 95
+skinparam ranksep 115
+skinparam ArrowColor #56657A
+skinparam ArrowThickness 1
+skinparam wrapWidth 170
+skinparam maxMessageSize 30
+skinparam packageStyle rectangle
+skinparam package {
+  BorderColor #718096
+  BackgroundColor #FAFBFD
+  FontColor #243447
+  FontStyle bold
+}
+skinparam node {
+  BorderColor #50769C
+  BackgroundColor #EEF5FC
+  FontColor #1F3348
+}
+skinparam artifact {
+  BorderColor #7E8DA0
+  BackgroundColor #FFFFFF
+}
+skinparam database {
+  BorderColor #438774
+  BackgroundColor #EDF8F2
+}
+skinparam cloud {
+  BorderColor #D08B32
+  BackgroundColor #FFF7E8
+}
+skinparam note {
+  BorderColor #C5CBD4
+  BackgroundColor #FFFDF5
+}
+
+title BREWLITE - PRODUCTION DEPLOYMENT (RENDER + CLOUDFLARE TUNNEL)
+
+package "CI | GitHub" as CI {
+  node "GitHub Repository" as REPO {
+    artifact "apps/web + apps/api\nDockerfiles / source" as SRC
+    artifact "docker-compose.yml\n.env.example" as CONF
+  }
+  node "GitHub Actions" as ACTIONS {
+    artifact "Lint / Test / Build\nCI quality gate" as TEST
+  }
+  REPO --> ACTIONS : push / PR
+}
+
+package "PRODUCTION | Cloudflare + Render" as PROD {
+  node "User device" <<device>> as USER {
+    artifact "Browser / PWA" as BROWSER
+  }
+  cloud "Cloudflare Edge\nHTTPS :443" as EDGE
+
+  node "Render Platform" as RENDER {
+    node "cloudflared\nBackground Worker (planned)" as TUNNEL
+    node "Render Docker Build\n(BuildKit)" as BUILDER
+    artifact "Render internal\nimage registry" as REGISTRY
+    node "Web service\nNext.js :3000" as WEB
+    node "API service\nNestJS :3001\n/health | logs | env secrets" as API
+    database "Render PostgreSQL\nprivate :5432" as DB
+    artifact "Managed persistent\ndatabase storage" as VOL
+  }
+
+  USER --> EDGE : HTTPS :443
+  EDGE --> TUNNEL : Tunnel
+  TUNNEL -right-> WEB : HTTP :3000
+  WEB -right-> API : HTTP :3001
+  API -right-> DB : TCP :5432
+  DB -- VOL : Storage
+  BUILDER --> REGISTRY : Store image
+  REGISTRY ..> WEB : Deploy web
+  REGISTRY ..> API : Deploy API
+}
+
+ACTIONS ..> BUILDER : CI passed
+REPO ..> BUILDER : Source
+
+
+@enduml
