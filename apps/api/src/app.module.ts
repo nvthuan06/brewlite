@@ -4,6 +4,8 @@ import { AppService } from './app.service.js';
 import { ProductsModule } from './products/products.module.js';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { OrderModule } from './order/order.module.js';
+import { PaymentModule } from './payment/payment.module.js';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       }),
     }),
     ProductsModule,
+    OrderModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
