@@ -6,26 +6,20 @@ import { Order } from './entities/order.entity.js'
 import {Product} from '../products/entities/product.entity.js'
 import {OrderItem} from './entities/orderItem.entity.js'
 import {TrangThaiDonHang} from './enum/order.enum.js'
+import {PaymentService} from '../payment/payment.service.js'
+import { PhuongThucThanhToan} from '../payment/enum/payment.enum.js';
 @Injectable()
 export class OrderService {
 
-  constructor(private readonly ds:DataSource){}
+  constructor(private readonly ds:DataSource,private readonly paymentService:PaymentService ){}
 
   async CheckOut(userId:string, createOrderDto:CreateOrderDto){
-    const {idempotencyKey, items} = createOrderDto;
+    const {items} = createOrderDto;
     const queryRunner = await this.ds.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      const kiemtra = await queryRunner.manager.findOne(Order,{
-        where : {idempotencyKey:idempotencyKey}
-      })
-      if(kiemtra){
-        await queryRunner.release();
-        return kiemtra;
-      }
-
       let tongTien =0;
       const luuItems = [];
 
@@ -53,14 +47,24 @@ export class OrderService {
 
       }
       const newOrder = await queryRunner.manager.create(Order,{
-        idempotencyKey:idempotencyKey,
         tongTien:tongTien,
-        trangThai:TrangThaiDonHang.DA_NHAN,
+        trangThai:TrangThaiDonHang.DANG_THANH_TOAN,
         orderItem:luuItems
       });
       await queryRunner.manager.save(Order, newOrder);
+      const paymentInfo = await this.paymentService.CreatePayment(
+        queryRunner, 
+        newOrder, 
+        tongTien, 
+        PhuongThucThanhToan.VI
+      );
+      
+
       await queryRunner.commitTransaction();
-      return newOrder;
+      return {
+        order:newOrder,
+        detail: paymentInfo,
+      };
     }catch(error){
       await queryRunner.rollbackTransaction();
       if (error instanceof BadRequestException) {

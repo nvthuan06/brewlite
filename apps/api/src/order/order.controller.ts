@@ -9,7 +9,7 @@ export class OrderController {
   async CheckOut (@Request() req:any, @Body() createOrderDto:CreateOrderDto)
   {
     const userId = "du_lieu_mock";
-    const newOrder = this.orderService.CheckOut(userId,createOrderDto);
+    const newOrder = await this.orderService.CheckOut(userId,createOrderDto);
     return {
       data:newOrder,
       message:"Tạo đơn hàng thành công"

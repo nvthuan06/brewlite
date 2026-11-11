@@ -18,4 +18,12 @@ export class Payment {
 
   @Column({ type: 'enum', enum: TrangThaiThanhToan})
   trangThai: TrangThaiThanhToan;
+
+  @Column({ type: 'int', unique: true, nullable: true })
+  IdempotencyKey: number;
+
+  @OneToOne(()=>Order)
+  @JoinColumn({name:'orderId'})
+  order:Order;
+
 }
