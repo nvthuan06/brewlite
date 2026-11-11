@@ -1,5 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import {OrderItem} from '../../order/entities/orderItem.entity.js'
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('products')
 export class Product {
@@ -20,8 +19,4 @@ export class Product {
 
     @Column({ type: 'varchar'})
     urlAnh: string;
-
-    @OneToMany(()=>OrderItem, (orderitem)=>orderitem.product)
-    orderitem: OrderItem[];
-
 }
