@@ -1,0 +1,54 @@
+@startuml
+title XEM MENU
+
+|CUSTOMER|
+|UI|
+|API|
+|DATABASE|
+
+|CUSTOMER|
+start
+:Mở trang "Menu";
+
+|UI|
+:Gửi yêu cầu lấy danh sách sản phẩm;
+
+|API|
+:Nhận yêu cầu & gửi truy vấn;
+
+|DATABASE|
+:Truy xuất danh sách sản phẩm từ PostgreSQL;
+
+|API|
+:Nhận kết quả truy vấn;
+
+switch ()
+case ([Có dữ liệu sản phẩm])
+  |API|
+  :Trả về danh sách sản phẩm;
+  |UI|
+  :Hiển thị danh sách sản phẩm;
+  |CUSTOMER|
+  :Xem danh sách sản phẩm;
+  stop
+
+case ([Danh sách sản phẩm trống])
+  |API|
+  :Trả về danh sách rỗng;
+  |UI|
+  :Hiển thị thông báo "Hiện chưa có sản phẩm nào trên menu";
+  |CUSTOMER|
+  :Xem thông báo chưa có sản phẩm;
+  stop
+
+case ([Lỗi hệ thống])
+  |API|
+  :Trả về lỗi;
+  |UI|
+  :Hiển thị lỗi "Lỗi truy xuất dữ liệu";
+  |CUSTOMER|
+  :Xem thông báo lỗi;
+  stop
+endswitch
+
+@enduml
