@@ -6,31 +6,30 @@ import{Product} from '../../products/entities/product.entity.js'
 
 export class OrderItem {
     @PrimaryGeneratedColumn('uuid')
-    id:number
+    id:string;
 
     @Column({type:'int'})
-    soLuong:number
+    soLuong:number;
 
     @Column({type:'decimal', precision: 10, scale:0})
-    thanhTien:number
+    thanhTien:number;
 
     @Column({
         type: 'enum',
         enum: SIZE,
-
     })
-    size:SIZE
+    size:SIZE;
 
     @Column({
         type: 'enum',
         enum: TOPPING,
         nullable: true
     })
-    topping:TOPPING
+    topping:TOPPING;
 
     @ManyToOne(()=> Order, (order)=> order.orderitem)
     @JoinColumn({name: 'Id_Order'})
-    order : Order
+    order : Order;
 
     @ManyToOne(()=>Product, (product)=>product.orderitem)
     @JoinColumn({name:'id_product'})

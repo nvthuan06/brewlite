@@ -13,7 +13,7 @@ import { SIZE, TOPPING } from '../enum/orderitem.enum.js';
 
 
 export class OrderItemDto {
-  @IsUUID('all', { message: 'ID sản phẩm phải là định dạng UUID' })
+  @IsInt({ message: 'ID sản phẩm phải là số nguyên' })
   @IsNotEmpty()
   productId: number;
 
