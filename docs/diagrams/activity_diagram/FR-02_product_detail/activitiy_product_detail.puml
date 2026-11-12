@@ -1,0 +1,76 @@
+@startuml
+title Xem chi tiết sản phẩm
+
+skinparam monochrome true
+skinparam shadowing false
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderColor black
+skinparam ArrowColor black
+skinparam SwimlaneBorderColor black
+skinparam defaultTextAlignment center
+skinparam ConditionEndStyle hline
+skinparam nodesep 50
+skinparam ranksep 40
+
+|Customer|
+|UI|
+|System|
+
+|Customer|
+start
+:Chọn sản phẩm trên trang "Menu";
+
+|UI|
+repeat :Gửi yêu cầu xem chi tiết sản phẩm;
+
+|System|
+:Truy xuất dữ liệu sản phẩm từ PostgreSQL;
+
+|UI|
+backward :Hiển thị thông báo lỗi tải dữ liệu\n&\nBấm thử lại;
+|System|
+repeat while () is (Lỗi truy xuất DB) not (Truy xuất thành công)
+
+:Kiểm tra sản phẩm & tồn kho;
+if () then (Không tồn tại / Hết hàng)
+  |UI|
+  :Hiển thị cảnh báo hết hàng / không tồn tại;
+  |Customer|
+  :Quay lại trang "Menu";
+  stop
+else (Còn hàng)
+  |System|
+  fork
+    :Lấy thông tin tên & giá bán;
+  fork again
+    :Lấy danh sách size & topping;
+  end fork
+endif
+
+|UI|
+repeat :Hiển thị chi tiết sản phẩm\n&\nCác tùy chọn size/topping;
+
+|Customer|
+:Chọn size và topping mong muốn;
+
+|UI|
+:Gửi tùy chọn size/topping;
+
+|System|
+fork
+  :Ghi nhận tùy chọn size/topping;
+fork again
+  :Tính toán mức giá theo tùy chọn;
+end fork
+
+|UI|
+backward :Cập nhật mức giá hiển thị\ntheo thời gian thực;
+|System|
+repeat while () is (Đổi tùy chọn khác) not (Hoàn tất chọn)
+
+|UI|
+:Hiển thị thông tin & mức giá cuối cùng;
+stop
+@enduml
