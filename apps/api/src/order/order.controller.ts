@@ -1,16 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseGuards } from '@nestjs/common';
 import { OrderService } from './order.service.js';
 import { CreateOrderDto } from './dto/create-order.dto.js';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 
 
 @Controller('order')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
+  @UseGuards(JwtAuthGuard)
   @Post('checkout')
   async CheckOut (@Request() req:any, @Body() createOrderDto:CreateOrderDto)
   {
-    const userId = "du_lieu_mock";
+    const userId = await req.user.userId;
     const newOrder = await this.orderService.CheckOut(userId,createOrderDto);
     return {
       data:newOrder,
@@ -37,9 +39,10 @@ export class OrderController {
   }
 
   // 3. Khách hàng hủy đơn hàng
+  @UseGuards(JwtAuthGuard)
   @Patch(':id/cancel')
   async cancelOrder(@Request() req: any, @Param('id') idOrder: string) {
-    const userId = req.user?.id || 'du_lieu_mock';
+    const userId = req.user.userId || 'du_lieu_mock';
     const cancelled = await this.orderService.cancelOrder(userId, idOrder);
     return {
       data: cancelled,

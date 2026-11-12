@@ -23,7 +23,7 @@ import { PromotionModule } from './promotion/promotion.module.js';
         password: config.getOrThrow<string>('DB_PASSWORD'),
         database: config.getOrThrow<string>('DB_NAME'),
         autoLoadEntities: true,
-        synchronize: process.env.NODE_ENV !== 'production', // CHỈ local
+        synchronize: process.env.NODE_ENV !== 'production', 
       }),
     }),
     ProductsModule,
