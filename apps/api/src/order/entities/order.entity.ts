@@ -8,9 +8,6 @@ export class Order {
     @PrimaryGeneratedColumn('uuid')
     idOrder: string;
 
-    @Column({type:'varchar'})
-    idempotencyKey: string;
-
     @Column({type:'decimal', precision: 10, scale:0})
     tongTien: number;
 

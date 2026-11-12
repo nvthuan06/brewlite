@@ -1,4 +1,5 @@
 export enum TrangThaiDonHang {
+  DANG_THANH_TOAN='DANG_THANH_TOAN',
   DA_NHAN = 'DA_NHAN',
   DANG_CHUAN_BI = 'DANG_CHUAN_BI',
   HOAN_TAT = 'HOAN_TAT',

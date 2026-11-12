@@ -1,6 +1,6 @@
 export enum PhuongThucThanhToan {
-  VI_DIEN_TU = 'VI_DIEN_TU',
-  THE_NGAN_HANG = 'THE_NGAN_HANG',
+  VI = 'VI_DIEN_TU',
+  THE = 'THE_NGAN_HANG',
 }
 export enum TrangThaiThanhToan {
   PENDING = 'PENDING',

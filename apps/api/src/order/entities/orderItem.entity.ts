@@ -1,7 +1,7 @@
 import{Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn} from 'typeorm'
 import{SIZE, TOPPING} from '../enum/orderitem.enum.js'
 import{Order} from './order.entity.js'
-import{Product} from '../../products/entities/product.entity.js'
+import type {Product} from '../../products/entities/product.entity.js'
 @Entity('OrderItem')
 
 export class OrderItem {
@@ -31,7 +31,7 @@ export class OrderItem {
     @JoinColumn({name: 'Id_Order'})
     order : Order;
 
-    @ManyToOne(()=>Product, (product)=>product.orderitem)
+    @ManyToOne('Product', 'orderitem')
     @JoinColumn({name:'id_product'})
     product : Product
 

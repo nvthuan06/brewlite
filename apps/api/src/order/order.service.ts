@@ -6,17 +6,21 @@ import {
 } from '@nestjs/common';
 import { DataSource, Not } from 'typeorm';
 import { CreateOrderDto } from './dto/create-order.dto.js';
-import { OrderItemDto } from './dto/orderitem.dto.js';
-import { Order } from './entities/order.entity.js';
-import { Product } from '../products/entities/product.entity.js';
-import { OrderItem } from './entities/orderItem.entity.js';
-import { TrangThaiDonHang } from './enum/order.enum.js';
+import { OrderItemDto } from './dto/orderitem.dto.js'
+import { Order } from './entities/order.entity.js'
+import {Product} from '../products/entities/product.entity.js'
+import {OrderItem} from './entities/orderItem.entity.js'
+import {TrangThaiDonHang} from './enum/order.enum.js'
+import {PaymentService} from '../payment/payment.service.js'
+import { PhuongThucThanhToan} from '../payment/enum/payment.enum.js';
 @Injectable()
 export class OrderService {
   constructor(private readonly ds: DataSource) {}
 
-  async CheckOut(userId: string, createOrderDto: CreateOrderDto) {
-    const { idempotencyKey, items } = createOrderDto;
+  constructor(private readonly ds:DataSource,private readonly paymentService:PaymentService ){}
+
+  async CheckOut(userId:string, createOrderDto:CreateOrderDto){
+    const {items} = createOrderDto;
     const queryRunner = await this.ds.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -59,16 +63,26 @@ export class OrderService {
         });
         luuItems.push(orderItem);
       }
-      const newOrder = await queryRunner.manager.create(Order, {
-        idempotencyKey: idempotencyKey,
-        tongTien: tongTien,
-        trangThai: TrangThaiDonHang.DA_NHAN,
-        orderitem: luuItems,
+      const newOrder = await queryRunner.manager.create(Order,{
+        tongTien:tongTien,
+        trangThai:TrangThaiDonHang.DANG_THANH_TOAN,
+        orderItem:luuItems
       });
       await queryRunner.manager.save(Order, newOrder);
+      const paymentInfo = await this.paymentService.CreatePayment(
+        queryRunner, 
+        newOrder, 
+        tongTien, 
+        PhuongThucThanhToan.VI
+      );
+      
+
       await queryRunner.commitTransaction();
-      return newOrder;
-    } catch (error) {
+      return {
+        order:newOrder,
+        detail: paymentInfo,
+      };
+    }catch(error){
       await queryRunner.rollbackTransaction();
       if (error instanceof BadRequestException) {
         throw error;
