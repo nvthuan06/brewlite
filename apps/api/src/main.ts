@@ -29,4 +29,4 @@ async function bootstrap() {
   // 4. Khởi chạy server (Chỉ gọi app.listen 1 lần duy nhất ở cuối hàm)
   await app.listen(process.env.PORT ?? 3001);
 }
-bootstrap();
+void bootstrap();
