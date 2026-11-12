@@ -1,0 +1,85 @@
+@startuml
+title Lập hóa đơn nhập hàng
+
+skinparam monochrome true
+skinparam shadowing false
+skinparam ActivityBackgroundColor white
+skinparam ActivityBorderColor black
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityDiamondBorderColor black
+skinparam ArrowColor black
+skinparam SwimlaneBorderColor black
+skinparam defaultTextAlignment center
+skinparam ConditionEndStyle hline
+skinparam nodesep 50
+skinparam ranksep 40
+
+|Manager|
+|UI|
+|System|
+
+|Manager|
+start
+:Chọn chức năng "Lập hóa đơn nhập hàng";
+
+|UI|
+repeat :Gửi yêu cầu mở trang nhập hàng;
+
+|System|
+:Kiểm tra token JWT;
+
+|UI|
+backward :Hiển thị form đăng nhập\n&\nNhập thông tin đăng nhập;
+|System|
+repeat while () is (Chưa đăng nhập) not (Đã đăng nhập)
+
+:Kiểm tra phân quyền truy cập;
+if () then (Không có quyền Quản lý)
+  |UI|
+  :Chặn truy cập & Hiển thị cảnh báo;
+  stop
+else (Đúng quyền Quản lý)
+  |System|
+  :Khởi tạo dữ liệu biểu mẫu nhập kho;
+endif
+
+|UI|
+repeat :Hiển thị giao diện lập hóa đơn nhập hàng;
+
+|Manager|
+:Nhập thông tin hóa đơn, số lượng nhập\n&\nBấm "Lưu";
+
+|UI|
+:Gửi dữ liệu hóa đơn nhập hàng;
+
+|System|
+:Kiểm tra tính hợp lệ của hóa đơn;
+
+|UI|
+backward :Hiển thị thông báo không hợp lệ\n&\nYêu cầu chỉnh sửa lại;
+|System|
+repeat while () is (Dữ liệu không hợp lệ) not (Dữ liệu hợp lệ)
+
+|System|
+fork
+  :Lưu hóa đơn nhập hàng mới;
+fork again
+  :Tự động cộng dồn số lượng tồn kho;
+end fork
+:Thực thi PostgreSQL Transaction;
+
+if () then (Lỗi lưu Database)
+  |System|
+  :Rollback (Giữ nguyên số lượng tồn kho);
+  |UI|
+  :Hiển thị thông báo tạo hóa đơn thất bại;
+  stop
+else (Lưu thành công)
+  |System|
+  :Commit Transaction;
+endif
+
+|UI|
+:Hiển thị thông báo lập hóa đơn thành công;
+stop
+@enduml
