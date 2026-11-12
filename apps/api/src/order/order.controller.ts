@@ -16,4 +16,8 @@ export class OrderController {
     }
 
   }
+  @Get()
+  async TimTatCaHoaDon(){
+    return await this.orderService.findAll()
+  }
 }
