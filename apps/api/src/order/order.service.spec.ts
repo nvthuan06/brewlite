@@ -6,12 +6,14 @@ import { OrderService } from './order.service.js';
 import { PaymentService } from '../payment/payment.service.js';
 import { PhuongThucThanhToan, TrangThaiThanhToan } from '../payment/enum/payment.enum.js';
 import { TrangThaiDonHang } from './enum/order.enum.js';
+import { PromotionService } from '../promotion/promotion.service.js';
 
 describe('OrderService', () => {
   let service: OrderService;
   let queryRunnerMock: any;
   let dataSourceMock: any;
   let paymentServiceMock: any;
+  let promotionServiceMock: any; // Khai báo thêm biến cho PromotionService
 
   beforeEach(async () => {
     queryRunnerMock = {
@@ -35,11 +37,17 @@ describe('OrderService', () => {
       CreatePayment: vi.fn(),
     };
 
+    // Khởi tạo đối tượng mock cho PromotionService
+    promotionServiceMock = {
+      kiemTraHopLe: vi.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         OrderService,
         { provide: DataSource, useValue: dataSourceMock },
         { provide: PaymentService, useValue: paymentServiceMock },
+        { provide: PromotionService, useValue: promotionServiceMock }, // Thêm Provider giả lập này vào Test Module
       ],
     }).compile();
 
@@ -59,6 +67,9 @@ describe('OrderService', () => {
       qrCodeUrl: 'https://qr.sepay.vn/...',
     };
     paymentServiceMock.CreatePayment.mockResolvedValue(mockPaymentInfo);
+
+    // Mock hàm kiemTraHopLe trả về undefined nếu không truyền maPromotion
+    promotionServiceMock.kiemTraHopLe.mockResolvedValue(undefined);
 
     const dto = {
       idempotencyKey: 'key-123',
