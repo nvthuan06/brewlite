@@ -140,7 +140,3 @@ Việc xác thực webhook, kiểm tra số tiền và mã đơn hàng, cũng nh
 - Cấu hình nhạy cảm, thông tin xác thực SePay và khóa webhook cần được lấy từ biến môi trường thông qua `ConfigModule`/`ConfigService`, không ghi trực tiếp vào mã nguồn.
 - Logging có cấu trúc và health check cần được triển khai hoặc chuẩn hóa như các mối quan tâm xuyên suốt; không xem chúng là tính năng đã hoàn thiện nếu chưa được xây dựng.
 - Các module chỉ nên export provider cần thiết, tránh để module khác phụ thuộc trực tiếp vào chi tiết nội bộ nếu không có nhu cầu.
-
----
-
-**BrewLite – Đồ án Công nghệ Phần mềm | Nhóm 12**

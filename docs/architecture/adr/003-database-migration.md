@@ -130,7 +130,3 @@ Tuân thủ kiến trúc phân lớp tại **ADR-002**, tầng Controller chỉ 
 - **Lộ trình chuyển giao từ `synchronize: true`:** Nhóm giải quyết triệt để lưu ý đã nêu ở cuối **ADR-002** bằng cách trích xuất toàn bộ lược đồ hiện tại thành tệp Initial Migration chuẩn trước khi đóng gói phiên bản production.
 - **Quy tắc bất biến của lịch sử Migration:** Tuyệt đối không chỉnh sửa nội dung các tệp migration đã được merge vào nhánh chính. Mọi thay đổi phát sinh trong Sprint 2 phải được tạo thành tệp migration tiếp theo.
 - **Bảo mật thông tin kết nối (Task 3.2 & Task 5.4):** Tệp cấu hình `data-source.ts` chỉ đọc chuỗi kết nối PostgreSQL từ biến môi trường (`.env` ở local hoặc Secrets trên CI/CD), tuyệt đối không ghi cứng (hardcode) tài khoản hay mật khẩu database vào mã nguồn, đồng thời đảm bảo PostgreSQL trên production có persistent storage và không mở public trực tiếp ra ngoài.
-
----
-
-**BrewLite – Đồ án Công nghệ Phần mềm | Nhóm 12**
