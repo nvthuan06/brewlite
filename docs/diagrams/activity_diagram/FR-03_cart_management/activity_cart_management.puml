@@ -1,0 +1,50 @@
+@startuml
+|Khách hàng|
+start
+:Chọn nút "Giỏ hàng";
+
+|Frontend|
+:Hiển thị giao diện Giỏ hàng;
+
+if () then ([Giỏ hàng trống])
+  :Thông báo giỏ hàng trống;
+  
+  |Khách hàng|
+  :Nhấn nút "Tiếp tục mua hàng";
+  
+else ([Giỏ hàng không trống])
+  |Frontend|
+  :Xuất ra danh sách sản phẩm kèm giá;
+  :Kiểm tra đăng nhập để hiển thị điểm tích lũy;
+  
+  if () then ([Chưa đăng nhập])
+    :Hiển thị bảng nhắc đăng nhập để xem điểm;
+  else ([Đã đăng nhập])
+    :Gửi api để nhận điểm tích lũy của khách hàng hiện tại;
+    
+    |Backend|
+    :Truy vấn điểm của tài khoản khách hàng;
+    
+    if () then ([Điểm tích lũy hợp lệ])
+      :Thông báo hợp lệ;
+      |Frontend|
+      :Hiển thị bảng điểm tích lũy hiện có;
+    else ([Điểm tích lũy không hợp lệ])
+      :Thông báo không hợp lệ;
+      |Frontend|
+      :Hiển thị bảng thông báo chưa tải được điểm;
+    endif
+  endif
+  
+  |Khách hàng|
+  split
+    :Nhấn nút "Tiếp tục mua hàng";
+  split again
+    :Nhấn nút "Tiến hành đặt hàng";
+  end split
+endif
+
+|Frontend|
+:Đổi giao diện;
+stop
+@enduml

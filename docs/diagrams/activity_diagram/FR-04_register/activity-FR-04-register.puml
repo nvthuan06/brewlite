@@ -1,0 +1,73 @@
+@startuml
+title Activity Diagram - FR-04: Đăng ký tài khoản
+
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #374151
+  FontColor #111827
+  DiamondBackgroundColor #F3F4F6
+  DiamondBorderColor #374151
+  ArrowColor #374151
+  StartColor #374151
+  EndColor #374151
+  BarColor #374151
+}
+skinparam swimlaneBorderColor #9CA3AF
+skinparam swimlaneTitleBackgroundColor #E8EDF5
+
+|Khách hàng mới|
+start
+:Chọn "Đăng ký";
+|Next.js UI|
+:Hiển thị biểu mẫu đăng ký;
+|Khách hàng mới|
+:Nhập email, mật khẩu\nvà xác nhận mật khẩu;
+:Nhấn "Đăng ký";
+|Next.js UI|
+:Kiểm tra xác nhận mật khẩu;
+if (Mật khẩu xác nhận khớp?) then (Có)
+  :Gửi POST /auth/register;
+  |NestJS API|
+  :Kiểm tra định dạng email\nvà độ dài mật khẩu;
+  if (Dữ liệu hợp lệ?) then (Có)
+    |PostgreSQL|
+    :Tìm tài khoản theo email;
+    |NestJS API|
+    if (Email đã tồn tại?) then (Có)
+      :Trả lỗi 409 Conflict;
+      |Next.js UI|
+      :Thông báo email đã được sử dụng;
+      stop
+    else (Không)
+      :Băm mật khẩu bằng bcrypt;
+      |PostgreSQL|
+      :Lưu tài khoản và mật khẩu đã băm;
+      if (Lưu thành công?) then (Có)
+        |NestJS API|
+        :Trả kết quả đăng ký thành công;
+        |Next.js UI|
+        :Thông báo đăng ký thành công;
+        :Chuyển đến trang Đăng nhập;
+        stop
+      else (Không)
+        |NestJS API|
+        :Trả lỗi hệ thống;
+        |Next.js UI|
+        :Thông báo đăng ký thất bại;
+        stop
+      endif
+    endif
+  else (Không)
+    :Trả lỗi 400 Bad Request;
+    |Next.js UI|
+    :Hiển thị lỗi dữ liệu đầu vào;
+    stop
+  endif
+else (Không)
+  :Thông báo mật khẩu xác nhận không khớp;
+  stop
+endif
+@enduml

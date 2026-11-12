@@ -28,54 +28,70 @@ export const DEFAULT_TOPPINGS: ProductToppingOption[] = [
 @Injectable()
 export class ProductsService implements OnModuleInit {
   private readonly logger = new Logger(ProductsService.name);
+
   constructor(
     @InjectRepository(Product)
     private readonly productRepo: Repository<Product>,
-  ){}
-  async onModuleInit(){
+  ) {}
+
+  async onModuleInit() {
     const dem = await this.productRepo.count();
-    if(dem === 0){
+    if (dem === 0) {
       const taoSP = [
         {
           tenProduct: 'Cà phê sữa',
           giaProduct: 30000,
           soLuong: 100,
           trangThaiBan: true,
-          urlAnh: 'https://cdn.tgdd.vn/Products/Images/42/268882/cafe-sua-da-600x600.jpg'
+          urlAnh:
+            'https://cdn.tgdd.vn/Products/Images/42/268882/cafe-sua-da-600x600.jpg',
+          sizes: DEFAULT_SIZES,
+          toppings: DEFAULT_TOPPINGS,
         },
         {
           tenProduct: 'Cà phê đen',
           giaProduct: 25000,
           soLuong: 100,
           trangThaiBan: true,
-          urlAnh: 'https://cdn.tgdd.vn/Products/Images/42/268882/cafe-den-600x600.jpg'
+          urlAnh:
+            'https://cdn.tgdd.vn/Products/Images/42/268882/cafe-den-600x600.jpg',
+          sizes: DEFAULT_SIZES,
+          toppings: DEFAULT_TOPPINGS,
         },
         {
           tenProduct: 'Cappuccino',
           giaProduct: 35000,
           soLuong: 100,
           trangThaiBan: true,
-          urlAnh: 'https://cdn.tgdd.vn/Products/Images/42/268882/cappuccino-600x600.jpg'
+          urlAnh:
+            'https://cdn.tgdd.vn/Products/Images/42/268882/cappuccino-600x600.jpg',
+          sizes: DEFAULT_SIZES,
+          toppings: DEFAULT_TOPPINGS,
         },
         {
           tenProduct: 'Latte',
           giaProduct: 40000,
           soLuong: 100,
           trangThaiBan: true,
-          urlAnh: 'https://cdn.tgdd.vn/Products/Images/42/268882/latte-600x600.jpg'
+          urlAnh:
+            'https://cdn.tgdd.vn/Products/Images/42/268882/latte-600x600.jpg',
+          sizes: DEFAULT_SIZES,
+          toppings: DEFAULT_TOPPINGS,
         },
         {
           tenProduct: 'Sinh tố bơ',
           giaProduct: 45000,
           soLuong: 100,
           trangThaiBan: true,
-          urlAnh: 'https://cdn.tgdd.vn/Products/Images/42/268882/sinh-to-bo-600x600.jpg'
-        }
-        
-      ]
+          urlAnh:
+            'https://cdn.tgdd.vn/Products/Images/42/268882/sinh-to-bo-600x600.jpg',
+          sizes: DEFAULT_SIZES,
+          toppings: DEFAULT_TOPPINGS,
+        },
+      ];
       await this.productRepo.save(taoSP);
       this.logger.log('Đã tạo dữ liệu mẫu cho bảng products');
-    }else {
+    } else {
       const existingProducts = await this.productRepo.find();
       for (const item of existingProducts) {
         if (!item.sizes || !item.toppings) {
@@ -91,14 +107,15 @@ export class ProductsService implements OnModuleInit {
     return await this.productRepo.find();
   }
 
-
   async findOne(id: number) {
     const oneProduct = await this.productRepo.findOne({
-      where: { idProduct: id }
+      where: { idProduct: id },
     });
-    if(!oneProduct){
-      throw new Error(`Không tìm thấy sản phẩm có id ${id}`);
+
+    if (!oneProduct) {
+      throw new NotFoundException(`Không tìm thấy sản phẩm có id ${id}`);
     }
+
     return {
       ...oneProduct,
       giaProduct: Number(oneProduct.giaProduct),

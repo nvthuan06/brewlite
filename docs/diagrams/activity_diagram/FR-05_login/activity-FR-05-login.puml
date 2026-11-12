@@ -1,0 +1,72 @@
+@startuml
+title Activity Diagram - FR-05: Đăng nhập hệ thống
+
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #374151
+  FontColor #111827
+  DiamondBackgroundColor #F3F4F6
+  DiamondBorderColor #374151
+  ArrowColor #374151
+  StartColor #374151
+  EndColor #374151
+  BarColor #374151
+}
+skinparam swimlaneBorderColor #9CA3AF
+skinparam swimlaneTitleBackgroundColor #E8EDF5
+
+|Khách hàng|
+start
+:Chọn "Đăng nhập";
+|Next.js UI|
+:Hiển thị biểu mẫu đăng nhập;
+|Khách hàng|
+:Nhập email và mật khẩu;
+:Nhấn "Đăng nhập";
+|Next.js UI|
+:Kiểm tra các trường bắt buộc;
+if (Đã nhập đủ thông tin?) then (Có)
+  :Gửi POST /auth/login;
+  |NestJS API|
+  :Kiểm tra dữ liệu đầu vào;
+  if (Dữ liệu hợp lệ?) then (Có)
+    |PostgreSQL|
+    :Tìm tài khoản theo email\n(kèm mật khẩu đã băm);
+    |NestJS API|
+    if (Tìm thấy tài khoản?) then (Có)
+      :So sánh mật khẩu với bcrypt.compare();
+      if (Mật khẩu chính xác?) then (Có)
+        :Tạo JWT access_token;
+        :Trả JWT cho giao diện;
+        |Next.js UI|
+        :Lưu token và cập nhật\ntrạng thái đăng nhập;
+        :Chuyển đến giao diện phù hợp;
+        |Khách hàng|
+        :Sử dụng hệ thống sau đăng nhập;
+        stop
+      else (Không)
+        :Trả lỗi 401 Unauthorized;
+        |Next.js UI|
+        :Thông báo email hoặc mật khẩu sai;
+        stop
+      endif
+    else (Không)
+      :Trả lỗi 401 Unauthorized;
+      |Next.js UI|
+      :Thông báo email hoặc mật khẩu sai;
+      stop
+    endif
+  else (Không)
+    :Trả lỗi dữ liệu không hợp lệ;
+    |Next.js UI|
+    :Hiển thị lỗi thông tin đăng nhập;
+    stop
+  endif
+else (Không)
+  :Yêu cầu nhập đầy đủ email và mật khẩu;
+  stop
+endif
+@enduml

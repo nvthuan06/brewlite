@@ -17,7 +17,7 @@ import { PromotionModule } from './promotion/promotion.module.js';
         host: 'localhost',
         port: 5432,
         username: 'postgres',
-        password: '123',
+        password: process.env.DB_PASSWORD || '123',
         database: 'brewlite_final',
         autoLoadEntities: true,
         synchronize: true,
