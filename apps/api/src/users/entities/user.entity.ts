@@ -1,17 +1,23 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Order } from '../../order/entities/order.entity.js';
+
 
 @Entity('users')
 export class User {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
   @Column({ type: 'varchar', length: 255, unique: true })
   email!: string;
 
-  // select:false để truy vấn mặc định không làm lộ mật khẩu đã băm.
   @Column({ name: 'passwordHash', type: 'varchar', length: 255, select: false })
   passwordHash!: string;
 
   @Column({ type: 'int', default: 0 })
   loyaltyPoints!: number;
+
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Order[];
+
+
 }

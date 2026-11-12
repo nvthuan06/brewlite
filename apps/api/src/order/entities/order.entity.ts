@@ -2,6 +2,7 @@ import{Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, Join
 import {TrangThaiDonHang} from '../enum/order.enum.js'
 import {OrderItem} from './orderItem.entity.js'
 import { Promotion } from '../../promotion/entities/promotion.entity.js';
+import { User } from '../../users/entities/user.entity.js';
 
 
 @Entity('Order')
@@ -30,5 +31,9 @@ export class Order {
     @ManyToOne(() => Promotion, (promotion) =>promotion.orders ,{ nullable: true })
     @JoinColumn({ name: 'idPromotion' })
     promotion: Promotion;
+
+    @ManyToOne(() => User, (user) => user.orders)
+    @JoinColumn({ name: 'userId' })
+    user: User;
     
 }

@@ -7,13 +7,14 @@ import {
   IsInt, 
   Min, 
   IsEnum, 
-  IsOptional 
+  IsOptional, 
+  IsNumber
 } from 'class-validator';
 import { SIZE, TOPPING } from '../enum/orderitem.enum.js';
 
 
 export class OrderItemDto {
-  @IsUUID('all', { message: 'ID sản phẩm phải là định dạng UUID' })
+  @IsNumber({}, { message: 'ID sản phẩm phải là định dạng UUID' })
   @IsNotEmpty()
   productId: number;
 
