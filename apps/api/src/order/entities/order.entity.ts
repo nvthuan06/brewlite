@@ -1,6 +1,7 @@
-import{Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany} from 'typeorm'
+import{Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, JoinColumn, ManyToOne} from 'typeorm'
 import {TrangThaiDonHang} from '../enum/order.enum.js'
 import {OrderItem} from './orderItem.entity.js'
+import { Promotion } from '../../promotion/entities/promotion.entity.js';
 
 
 @Entity('Order')
@@ -24,5 +25,10 @@ export class Order {
     trangThai: TrangThaiDonHang;
 
     @OneToMany(()=>OrderItem, (orderItem)=>orderItem.order,{cascade:true})
-    orderitem:OrderItem[]
+    orderitem:OrderItem[];
+
+    @ManyToOne(() => Promotion, (promotion) =>promotion.orders ,{ nullable: true })
+    @JoinColumn({ name: 'idPromotion' })
+    promotion: Promotion;
+    
 }

@@ -4,6 +4,7 @@ import { Payment } from './entities/payment.entity.js';
 import { PhuongThucThanhToan, TrangThaiThanhToan } from './enum/payment.enum.js';
 import { Order } from '../order/entities/order.entity.js';
 import {TrangThaiDonHang} from '../order/enum/order.enum.js'
+import {Product } from '../products/entities/product.entity.js'
 
 
 @Injectable()
@@ -67,6 +68,21 @@ export class PaymentService {
                     massage:'Không thấy đơn hàng'
                 }
             }
+            const THOI_GIAN_CHO_PHEP = 15 * 60 * 1000; 
+            const thoiGianHienTai = new Date().getTime();
+            const thoiGianTaoDon = new Date(payment.order.ngayDatHang).getTime(); 
+            if (thoiGianHienTai - thoiGianTaoDon > THOI_GIAN_CHO_PHEP) {
+                payment.trangThai = TrangThaiThanhToan.FAIL_PAYMENT;
+                payment.IdempotencyKey = payload.id;
+                payment.ngayThanhToan = new Date(payload.transactionDate);
+                await queryRunner.manager.save(Payment, payment);
+                
+                payment.order.trangThai = TrangThaiDonHang.HUY;
+                await queryRunner.manager.save(Order, payment.order);
+                
+                await queryRunner.commitTransaction();
+                return { success: true, message: 'Thanh toán trễ, đơn hàng đã bị hủy.' };
+            }
             if(payload.amountIn>=payment.soTien){
                 payment.trangThai=TrangThaiThanhToan.SUCCESS_PAYMENT;
                 payment.ngayThanhToan = new Date(payload.transactionDate);
@@ -76,6 +92,16 @@ export class PaymentService {
                     payment.order.trangThai = TrangThaiDonHang.DA_NHAN;
                     await queryRunner.manager.save(Order,payment.order);
                 }
+                if(payment.order.orderitem.length>0){
+                    for (const item in payment.order.orderitem){
+                        if((item as any).product){
+                            (item as any).product.soLuong = (item as any).product.soLuong - (item as any).soLuong;
+                                (item as any).product.soLuong = Math.max(0, (item as any).product.soLuong); 
+                                await queryRunner.manager.save(Product, (item as any).product);
+                        }
+                    }
+                }
+
             }else {
                 payment.trangThai = TrangThaiThanhToan.FAIL_PAYMENT;
                 payment.IdempotencyKey = payload.id;

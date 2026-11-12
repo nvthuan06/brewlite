@@ -1,9 +1,29 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateProductDto } from './dto/create-product.dto.js';
-// import { UpdateProductDto } from './dto/update-product.dto.js';
-import { Product } from './entities/product.entity.js';
+import {
+  Product,
+  ProductSizeOption,
+  ProductToppingOption,
+} from './entities/product.entity.js';
+import { SIZE, TOPPING } from '../order/enum/orderitem.enum.js';
+
+export const DEFAULT_SIZES: ProductSizeOption[] = [
+  { code: SIZE.S, label: 'Size S', extraPrice: 0 },
+  { code: SIZE.M, label: 'Size M', extraPrice: 5000 },
+  { code: SIZE.XL, label: 'Size XL', extraPrice: 10000 },
+];
+
+export const DEFAULT_TOPPINGS: ProductToppingOption[] = [
+  { code: TOPPING.TRAN_CHAU, label: 'Trân châu', extraPrice: 5000 },
+  { code: TOPPING.KEM, label: 'Kem', extraPrice: 7000 },
+  { code: TOPPING.PHO_MAI, label: 'Phô mai', extraPrice: 8000 },
+];
 
 @Injectable()
 export class ProductsService implements OnModuleInit {
@@ -55,13 +75,18 @@ export class ProductsService implements OnModuleInit {
       ]
       await this.productRepo.save(taoSP);
       this.logger.log('Đã tạo dữ liệu mẫu cho bảng products');
+    }else {
+      const existingProducts = await this.productRepo.find();
+      for (const item of existingProducts) {
+        if (!item.sizes || !item.toppings) {
+          item.sizes = item.sizes ?? DEFAULT_SIZES;
+          item.toppings = item.toppings ?? DEFAULT_TOPPINGS;
+          await this.productRepo.save(item);
+        }
+      }
     }
   }
-  // create(createProductDto: CreateProductDto) {
-  //   return 'This action adds a new product';
-  // }
 
-  //Lấy tất cả products ra
   async findAll() {
     return await this.productRepo.find();
   }
@@ -74,14 +99,11 @@ export class ProductsService implements OnModuleInit {
     if(!oneProduct){
       throw new Error(`Không tìm thấy sản phẩm có id ${id}`);
     }
-    return await oneProduct;
+    return {
+      ...oneProduct,
+      giaProduct: Number(oneProduct.giaProduct),
+      sizes: oneProduct.sizes ?? DEFAULT_SIZES,
+      toppings: oneProduct.toppings ?? DEFAULT_TOPPINGS,
+    };
   }
-
-  // update(id: number, updateProductDto: UpdateProductDto) {
-  //   return `This action updates a #${id} product`;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} product`;
-  // }
 }

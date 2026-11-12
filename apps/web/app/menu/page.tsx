@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Product } from '../../interface/product';
 import error from 'next/dist/api/error';
+import Link from 'next/link';
 
 export default function MenuPage() {
     const [products, setProducts] = useState<Product[]>([]);
@@ -37,10 +38,14 @@ export default function MenuPage() {
             <h1 className="text-2xl font-bold text-center mb-4">Thực đơn BrewLite</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {products.map(product => (
-                    <div key={product.idProduct} className="border rounded-lg p-4 shadow-md">
+                    <Link 
+                        href={`/product/${product.idProduct}`} 
+                        key={product.idProduct} 
+                        className="border rounded-lg p-4 shadow-md block hover:bg-gray-50 transition-colors"
+                    >
                         <h2 className="text-xl font-semibold">{product.tenProduct}</h2>
-                        <p className="text-lg font-bold">{Number(product.giaProduct).toLocaleString('vi-VN')} đ</p>
-                    </div>
+                        <p className="text-lg font-bold text-blue-600">{Number(product.giaProduct).toLocaleString('vi-VN')} đ</p>
+                    </Link>
                 ))}
             </div>
         </div>  

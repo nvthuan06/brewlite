@@ -40,7 +40,8 @@ enum TrangThaiThanhToan <<enumeration>> {
 }
 
 enum PhuongThucThanhToan <<enumeration>> {
-    Chuyen_khoan_ma_qr
+    VI
+    THE
 }
 
 ' ================= CLASSES =================
@@ -56,7 +57,6 @@ class User {
 class Order {
     - idOrder: UUID
     - tongTien: Decimal
-    - idempotencyKey: String
     - ngayDatHang: DateTime
     - trangThai: TrangThaiDonHang
 }
@@ -86,6 +86,7 @@ class LoyaltyTransaction {
 
 class Payment {
     - idPayment: UUID
+    - idempotencyKey: String
     - soTien: Decimal
     - ngayThanhToan: DateTime
     - phuongThuc: PhuongThucThanhToan
@@ -109,7 +110,7 @@ User "1" -down- "*" LoyaltyTransaction : Thuộc
 Order "1" -down- "1" LoyaltyTransaction : Có
 
 Order "1" -down- "1" Payment : Yêu Cầu
-Order "1" -down- "0..*" Promotion : Áp dụng 
+Order "0..*" -down- "1" Promotion : Áp dụng 
 
 ' ================= LIÊN KẾT ENUM =================
 Order -up- TrangThaiDonHang

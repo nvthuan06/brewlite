@@ -8,13 +8,14 @@ import {OrderItem} from './entities/orderItem.entity.js'
 import {TrangThaiDonHang} from './enum/order.enum.js'
 import {PaymentService} from '../payment/payment.service.js'
 import { PhuongThucThanhToan} from '../payment/enum/payment.enum.js';
+import { PromotionService } from '../promotion/promotion.service.js';
 @Injectable()
 export class OrderService {
 
-  constructor(private readonly ds:DataSource,private readonly paymentService:PaymentService ){}
+  constructor(private readonly ds:DataSource,private readonly paymentService:PaymentService, private readonly promotionService: PromotionService ){}
 
   async CheckOut(userId:string, createOrderDto:CreateOrderDto){
-    const {items} = createOrderDto;
+    const {items, maPromotion} = createOrderDto;
     const queryRunner = await this.ds.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -33,6 +34,7 @@ export class OrderService {
         if(product.soLuong<item.soLuong){
           throw new BadRequestException("Không đủ số lượng")
         }
+        
         const thanhTien = Number(product.giaProduct) * item.soLuong;
         tongTien = tongTien + thanhTien;
 
@@ -44,19 +46,26 @@ export class OrderService {
           topping : item.topping
         });
         luuItems.push(orderItem);
-
       }
-      const newOrder = await queryRunner.manager.create(Order,{
+      let ma = null;
+      if(maPromotion){
+        ma = await this.promotionService.kiemTraHopLe(maPromotion)
+        const discount = Number(ma.giamGia);
+        tongTien = Math.max(0, tongTien - discount);
+      }
+
+      const newOrder =  queryRunner.manager.create(Order,{
         tongTien:tongTien,
         trangThai:TrangThaiDonHang.DANG_THANH_TOAN,
-        orderItem:luuItems
+        promotion:ma ?? undefined,
+        orderitem:luuItems
       });
       await queryRunner.manager.save(Order, newOrder);
       const paymentInfo = await this.paymentService.CreatePayment(
-        queryRunner, 
-        newOrder, 
-        tongTien, 
-        PhuongThucThanhToan.VI
+        queryRunner,
+        newOrder,
+        tongTien,
+        PhuongThucThanhToan.VI,
       );
       
 
@@ -75,5 +84,13 @@ export class OrderService {
       await queryRunner.release();
     }
     
+  }
+    async findAll() {
+      return await this.ds.manager.find(Order, {
+      relations: { orderitem: true, promotion: true},
+      order: {
+        ngayDatHang: 'DESC'
+      }
+    });
   }
 }
