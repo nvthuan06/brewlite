@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Product } from '../../interface/product';
-import error from 'next/dist/api/error';
 import Link from 'next/link';
 
 export default function MenuPage() {
