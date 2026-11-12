@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, BadRequestException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { CreateOrderDto } from './dto/create-order.dto.js';
 import { OrderItemDto } from './dto/orderitem.dto.js'
@@ -85,12 +85,118 @@ export class OrderService {
     }
     
   }
+  async cancelOrder(userid: string, idOrder: string) {
+    const queryRunner = await this.ds.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const order = await queryRunner.manager.findOne(Order, {
+        where: { idOrder: idOrder },
+      });
+      if (!order) {
+        throw new NotFoundException("Không tìm thấy đơn hàng")
+      }
+      if (![TrangThaiDonHang.HUY, TrangThaiDonHang.THAT_BAI].includes(order.trangThai)) {
+        throw new BadRequestException('Không thể hủy đơn hàng này.');
+      }
+      order.trangThai = TrangThaiDonHang.HUY;
+      for(const item of order.orderitem) {
+        if (item.product) {
+          item.product.soLuong += item.soLuong;
+          await queryRunner.manager.save(Product, item.product);
+        }
+      }
+      const donHangBiHuy = await queryRunner.manager.save(Order, order);
+      await queryRunner.commitTransaction();
+      return donHangBiHuy;
+
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      if (error instanceof BadRequestException || error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'Lỗi hệ thống khi xóa đơn hàng: ' + error,
+      );
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async updateOrderStatus (idOrder: string, idUser: string, trangThaiMoi: TrangThaiDonHang) {
+    const queryRunner = await this.ds.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const order = await queryRunner.manager.findOne(Order, {where: {idOrder : idOrder}});
+      if (!order) {
+        throw new NotFoundException("Không tìm thấy đơn hàng");
+      }
+
+      if (order.trangThai === TrangThaiDonHang.THAT_BAI || order.trangThai === TrangThaiDonHang.HUY) {
+        throw new BadRequestException(`Đơn hàng đang ở trạng thái "${order.trangThai}", không thể đổi`);
+      }
+      const trangThaiHopLe: Record<TrangThaiDonHang, TrangThaiDonHang[]> = {
+        [TrangThaiDonHang.DA_NHAN]: [
+          TrangThaiDonHang.DANG_CHUAN_BI,
+          TrangThaiDonHang.HUY,
+          TrangThaiDonHang.THAT_BAI,
+        ],
+        [TrangThaiDonHang.DANG_CHUAN_BI]: [
+          TrangThaiDonHang.HOAN_TAT,
+          TrangThaiDonHang.HUY,
+        ],
+        [TrangThaiDonHang.THAT_BAI]: [TrangThaiDonHang.HUY],
+        [TrangThaiDonHang.HOAN_TAT]: [],
+        [TrangThaiDonHang.HUY]: [],
+        [TrangThaiDonHang.DANG_THANH_TOAN]: []
+      };
+
+      if (!trangThaiHopLe[order.trangThai].includes(trangThaiMoi)) {
+        throw new BadRequestException("Không thể chuyển trạng thái trùng");
+      }
+
+      if (trangThaiMoi === TrangThaiDonHang.HUY || trangThaiMoi === TrangThaiDonHang.THAT_BAI) {
+        for (const item of order.orderitem) {
+          if (item.product) {
+            item.product.soLuong += item.soLuong;
+            await queryRunner.manager.save(Product, item.product);
+          }
+        }
+      }
+      order.trangThai = trangThaiMoi;
+      const donHangCapNhat = await queryRunner.manager.save(Order, order);
+      await queryRunner.commitTransaction();
+      return donHangCapNhat;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      if (error instanceof BadRequestException || error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException("Lỗi cập nhật trạng thái đơn hàng: " + error);
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
     async findAll() {
       return await this.ds.manager.find(Order, {
-      relations: { orderitem: true, promotion: true},
-      order: {
-        ngayDatHang: 'DESC'
-      }
+        relations: { orderitem: true, promotion: true},
+        order: {
+          ngayDatHang: 'DESC'
+        }
+      });
+    }
+    async findOne(idOrder: string) {
+    const order = await this.ds.getRepository(Order).findOne({
+      where: { idOrder },
+      relations: { orderitem: { product: true } },
     });
+    if (!order) {
+      throw new NotFoundException(`Không tìm thấy đơn hàng #${idOrder}`);
+    }
+    return order;
   }
 }

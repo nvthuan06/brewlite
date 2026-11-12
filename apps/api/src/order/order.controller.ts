@@ -1,6 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Request } from '@nestjs/common';
 import { OrderService } from './order.service.js';
 import { CreateOrderDto } from './dto/create-order.dto.js';
+import { UpdateOrderStatusDto } from './dto/update-order-status.dto.js';
+
 
 @Controller('order')
 export class OrderController {
@@ -19,5 +21,29 @@ export class OrderController {
   @Get()
   async TimTatCaHoaDon(){
     return await this.orderService.findAll()
+  }
+  @Patch(':id/status')
+  async updateStatus(@Param('id') idOrder: string, @Request() req: any, @Body() updateDto: UpdateOrderStatusDto) {
+    const idUser = req.user?.id || req.user?.sub || 'staff_mock_id';
+    const updated = await this.orderService.updateOrderStatus(
+      idOrder,
+      idUser,
+      updateDto.trangThai,
+    );
+    return {
+      data: updated,
+      message: `Đã cập nhật trạng thái đơn hàng sang ${updateDto.trangThai}`,
+    };
+  }
+
+  // 3. Khách hàng hủy đơn hàng
+  @Patch(':id/cancel')
+  async cancelOrder(@Request() req: any, @Param('id') idOrder: string) {
+    const userId = req.user?.id || 'du_lieu_mock';
+    const cancelled = await this.orderService.cancelOrder(userId, idOrder);
+    return {
+      data: cancelled,
+      message: 'Hủy đơn hàng thành công',
+    };
   }
 }
