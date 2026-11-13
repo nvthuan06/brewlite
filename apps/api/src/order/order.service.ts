@@ -13,7 +13,7 @@ import { TrangThaiDonHang } from './enum/order.enum.js';
 import { PaymentService } from '../payment/payment.service.js';
 import { PhuongThucThanhToan } from '../payment/enum/payment.enum.js';
 import { PromotionService } from '../promotion/promotion.service.js';
-
+import { User } from '../users/entities/user.entity.js';
 @Injectable()
 export class OrderService {
   constructor(
@@ -73,11 +73,14 @@ export class OrderService {
         tongTien = Math.max(0, tongTien - discount);
       }
 
-      const newOrder = queryRunner.manager.create(Order, {
-        tongTien: tongTien,
-        trangThai: TrangThaiDonHang.DANG_THANH_TOAN,
-        promotion: ma ?? undefined,
-        orderitem: luuItems,
+      const user = await queryRunner.manager.findOneBy(User, { idUser: userId });
+      if (!user) throw new BadRequestException('Người dùng không tồn tại');
+      const newOrder =  queryRunner.manager.create(Order,{
+        user,
+        tongTien:tongTien,
+        trangThai:TrangThaiDonHang.DANG_THANH_TOAN,
+        promotion:ma ?? undefined,
+        orderitem:luuItems
       });
       await queryRunner.manager.save(Order, newOrder);
 

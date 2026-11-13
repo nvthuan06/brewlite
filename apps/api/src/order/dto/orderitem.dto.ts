@@ -7,7 +7,8 @@ import {
   IsInt, 
   Min, 
   IsEnum, 
-  IsOptional 
+  IsOptional, 
+  IsNumber
 } from 'class-validator';
 import { SIZE, TOPPING } from '../enum/orderitem.enum.js';
 
