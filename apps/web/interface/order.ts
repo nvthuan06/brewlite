@@ -1,6 +1,5 @@
-import { Product } from './product';
 import { Promotion } from './promotion';
-import { ProductSizeOption, ProductToppingOption } from './product.js';
+import { ProductSizeOption, ProductToppingOption, Product } from './product.js';
 
 export type TrangThaiDonHang =
   | 'DANG_THANH_TOAN'
@@ -13,8 +12,8 @@ export type TrangThaiDonHang =
 export interface OrderItemPayload {
   productId: number;
   soLuong: number;
-  size: ProductSizeOption;
-  topping?: ProductToppingOption;
+  size: ProductSizeOption['code'];
+  topping?: ProductToppingOption['code'];
 }
 
 export interface CreateOrderPayload {
@@ -27,8 +26,8 @@ export interface OrderItem {
   id: string;
   soLuong: number;
   thanhTien: number;
-  size: ProductSizeOption;
-  topping?: ProductToppingOption;
+  size: ProductSizeOption['code'];
+  topping?: ProductToppingOption['code'];
   product?: Product;
 }
 

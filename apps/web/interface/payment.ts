@@ -14,7 +14,7 @@ export interface Payment {
   order?: Order;
 }
 
-export interface PaymentDetail {
+export interface ChiTietPayment {
   payment: Payment;
   qrCodeUrl: string;
 }
@@ -22,7 +22,7 @@ export interface PaymentDetail {
 export interface CheckoutResponse {
   data: {
     order: Order;
-    detail: PaymentDetail | null;
+    detail: ChiTietPayment | null;
   };
   message: string;
 }

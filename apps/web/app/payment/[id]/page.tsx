@@ -3,6 +3,11 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import type { Order, TrangThaiDonHang } from "../../../interface/order";
+import type {
+  CheckoutResponse,
+  ChiTietPayment,
+} from "../../../interface/payment";
 import Link from "next/link";
 
 function PaymentContent() {
@@ -10,38 +15,29 @@ function PaymentContent() {
   const orderId = params?.id as string;
 
   const [order, setOrder] = useState<any>(null);
-  const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
-  const [maChuyenKhoan, setMaChuyenKhoan] = useState<string>("");
+  const [paymentDetail, setPaymentDetail] = useState<ChiTietPayment | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
   const [error, setError] = useState("");
 
-  // Backend NestJS của bạn chạy ở port 3000
   const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
   useEffect(() => {
     if (!orderId) return;
 
-    // Lấy link QR SePay và đơn hàng vừa tạo từ sessionStorage
     const savedCheckout = sessionStorage.getItem(`checkout_${orderId}`);
     if (savedCheckout) {
       try {
-        const parsed = JSON.parse(savedCheckout);
-        const savedOrder = parsed?.order?.data ?? parsed?.order;
-        if (savedOrder) setOrder(savedOrder);
-
-        if (parsed?.detail?.qrCodeUrl) {
-          setQrCodeUrl(parsed.detail.qrCodeUrl);
-        }
-        if (parsed?.detail?.payment?.maChuyenKhoan) {
-          setMaChuyenKhoan(parsed.detail.payment.maChuyenKhoan);
-        }
+        const parsed: CheckoutResponse["data"] = JSON.parse(savedCheckout);
+        if (parsed?.order) setOrder(parsed.order);
+        if (parsed?.detail) setPaymentDetail(parsed.detail);
       } catch (e) {
         console.error(e);
       }
     }
 
-    // Gọi API lấy trạng thái đơn mới nhất từ Backend
     async function fetchOrder() {
       try {
         const res = await fetch(`${apiUrl}/order/${orderId}`, {
@@ -50,8 +46,7 @@ function PaymentContent() {
         if (!res.ok) throw new Error("Không tìm thấy đơn hàng.");
 
         const result = await res.json();
-        // Bóc tách lớp wrapper { data, message } của OrderController
-        const orderData = result?.data ?? result;
+        const orderData: Order = result?.data ?? result;
         setOrder(orderData);
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : "Lỗi tải đơn hàng.");
@@ -62,7 +57,6 @@ function PaymentContent() {
 
     fetchOrder();
 
-    // Polling mỗi 3 giây để cập nhật trạng thái khi khách quét QR SePay xong
     const interval = setInterval(fetchOrder, 3000);
     return () => clearInterval(interval);
   }, [orderId, apiUrl]);
@@ -110,9 +104,9 @@ function PaymentContent() {
     );
   }
 
-  const canCancel = ["DANG_THANH_TOAN", "DA_NHAN", "THAT_BAI"].includes(
-    order.trangThai,
-  );
+  const canCancel = (
+    ["DANG_THANH_TOAN", "DA_NHAN", "THAT_BAI"] as TrangThaiDonHang[]
+  ).includes(order.trangThai);
 
   // Dự phòng trường hợp người dùng F5 làm mất sessionStorage thì vẫn tự dựng được link QR SePay
   // const displayQrUrl =
@@ -137,21 +131,23 @@ function PaymentContent() {
         )}
 
         {/* Hiển thị mã QR SePay khi đơn đang chờ thanh toán */}
-        {order.trangThai === "DANG_THANH_TOAN" && qrCodeUrl && (
+        {order.trangThai === "DANG_THANH_TOAN" && paymentDetail?.qrCodeUrl && (
           <div className="my-6 flex flex-col items-center">
             <p className="text-sm text-gray-600 mb-3">
               Mở ứng dụng Ngân hàng quét mã VietQR bên dưới để thanh toán (Thời
               hạn 15 phút):
             </p>
             <img
-              src={qrCodeUrl}
+              src={paymentDetail.qrCodeUrl}
               alt="Mã QR Thanh toán SePay"
               className="w-64 h-64 object-contain border-2 border-gray-300 rounded-xl p-2 shadow-sm bg-white"
             />
-            {maChuyenKhoan && (
+            {paymentDetail.payment?.maChuyenKhoan && (
               <p className="mt-3 text-sm text-gray-700">
                 Nội dung chuyển khoản:{" "}
-                <strong className="text-emerald-700">{maChuyenKhoan}</strong>
+                <strong className="text-emerald-700">
+                  {paymentDetail.payment.maChuyenKhoan}
+                </strong>
               </p>
             )}
           </div>
@@ -200,6 +196,12 @@ function PaymentContent() {
             </button>
           )}
         </div>
+        <Link
+          href="/LichSuDonHang"
+          className="mt-4 block text-sm text-gray-600 hover:underline"
+        >
+          Xem lịch sử đơn hàng
+        </Link>
       </div>
     </main>
   );
