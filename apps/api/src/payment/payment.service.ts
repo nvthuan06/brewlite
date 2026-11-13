@@ -57,6 +57,8 @@ export class PaymentService {
         try{
             const payment = await queryRunner.manager.createQueryBuilder(Payment, 'payment')
                 .leftJoinAndSelect('payment.order', 'order')
+                .leftJoinAndSelect('order.orderitem', 'orderitem')
+                .leftJoinAndSelect('orderitem.product', 'product')
                 .where(':content ILIKE CONCAT(\'%\', payment.maChuyenKhoan, \'%\')', {content: payload.transactionContent})
                 .andWhere('payment.trangThai = :status', { status: TrangThaiThanhToan.PENDING })
                 .getOne();
@@ -93,7 +95,7 @@ export class PaymentService {
                     await queryRunner.manager.save(Order,payment.order);
                 }
                 if(payment.order.orderitem.length>0){
-                    for (const item in payment.order.orderitem){
+                    for (const item of payment.order.orderitem){
                         if((item as any).product){
                             (item as any).product.soLuong = (item as any).product.soLuong - (item as any).soLuong;
                                 (item as any).product.soLuong = Math.max(0, (item as any).product.soLuong); 
