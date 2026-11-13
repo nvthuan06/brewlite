@@ -24,7 +24,7 @@ function ProductDetailContent() {
   useEffect(() => {
     if (!id) return;
 
-    fetch(`http://localhost:3000/products/${id}`)
+    fetch(`/backend/products/${id}`)
       .then((res) => {
         if (res.status === 404) {
           setNotFound(true);
