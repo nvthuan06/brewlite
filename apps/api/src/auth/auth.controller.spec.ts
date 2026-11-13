@@ -24,6 +24,7 @@ describe('AuthController', () => {
 
   it('TC09: Chuyển dữ liệu đăng ký cho AuthService', async () => {
     const dto = {
+      tenUser: 'Test User',
       email: 'test@brewlite.com',
       password: 'Abc123456',
     };
@@ -69,7 +70,7 @@ describe('AuthController', () => {
   it('TC11: Profile trả thông tin người dùng', () => {
     const req = {
       user: {
-        userId: 5,
+        userId: 'uuid-5',
         email: 'test@brewlite.com',
       },
     };
@@ -79,7 +80,7 @@ describe('AuthController', () => {
     );
 
     expect(result).toEqual({
-      userId: 5,
+      userId: 'uuid-5',
       email: 'test@brewlite.com',
     });
   });

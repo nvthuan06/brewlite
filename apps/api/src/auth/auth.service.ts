@@ -23,8 +23,8 @@ export class AuthService {
 
     const passwordHash = await bcrypt.hash(dto.password, 12);
     try {
-      const user = await this.usersService.create(email, passwordHash);
-      return { message: 'Đăng ký thành công', user: { id: user.id, email: user.email } };
+      const user = await this.usersService.create(dto.tenUser.trim(), email, passwordHash);
+      return { message: 'Đăng ký thành công', user: { idUser: user.idUser, tenUser: user.tenUser, email: user.email, vaiTro: user.vaiTro, diemThuong: user.diemThuong } };
     } catch (error: unknown) {
       // PostgreSQL UNIQUE VIOLATION (hai lượt đăng ký đồng thời).
       if (this.isUniqueViolation(error)) {
@@ -46,7 +46,7 @@ export class AuthService {
       throw new UnauthorizedException('Email hoặc mật khẩu không đúng');
     }
 
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.idUser, email: user.email };
     const access_token = await this.jwtService.signAsync(payload);
     return { access_token, token_type: 'Bearer' };
   }

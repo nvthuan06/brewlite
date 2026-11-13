@@ -50,12 +50,16 @@ describe('AuthService (FR-04, FR-05)', () => {
       );
 
       users.create.mockResolvedValue({
-        id: 7,
+        idUser: 'uuid-7',
+        tenUser: 'Test User',
+        vaiTro: 'KHACH_HANG',
+        diemThuong: 0,
         email: 'test@brewlite.com',
       });
 
       const result = await service.register({
         email: ' Test@BrewLite.com ',
+        tenUser: 'Test User',
         password: 'Abc123456',
       });
 
@@ -69,12 +73,16 @@ describe('AuthService (FR-04, FR-05)', () => {
       );
 
       expect(users.create).toHaveBeenCalledWith(
+        'Test User',
         'test@brewlite.com',
         'hashed-password',
       );
 
       expect(result.user).toEqual({
-        id: 7,
+        idUser: 'uuid-7',
+        tenUser: 'Test User',
+        vaiTro: 'KHACH_HANG',
+        diemThuong: 0,
         email: 'test@brewlite.com',
       });
 
@@ -92,6 +100,7 @@ describe('AuthService (FR-04, FR-05)', () => {
       await expect(
         service.register({
           email: 'used@brewlite.com',
+          tenUser: 'Test User',
           password: 'Abc123456',
         }),
       ).rejects.toBeInstanceOf(ConflictException);
@@ -113,6 +122,7 @@ describe('AuthService (FR-04, FR-05)', () => {
       await expect(
         service.register({
           email: 'race@brewlite.com',
+          tenUser: 'Test User',
           password: 'Abc123456',
         }),
       ).rejects.toBeInstanceOf(ConflictException);
@@ -132,6 +142,7 @@ describe('AuthService (FR-04, FR-05)', () => {
       await expect(
         service.register({
           email: 'test@brewlite.com',
+          tenUser: 'Test User',
           password: 'Abc123456',
         }),
       ).rejects.toThrow('database unavailable');
@@ -141,7 +152,7 @@ describe('AuthService (FR-04, FR-05)', () => {
   describe('FR-05: Đăng nhập', () => {
     it('TC05: Đăng nhập thành công và cấp JWT', async () => {
       users.findByEmailWithPassword.mockResolvedValue({
-        id: 8,
+        idUser: 'uuid-8',
         email: 'test@brewlite.com',
         passwordHash: 'stored-hash',
       });
@@ -167,7 +178,7 @@ describe('AuthService (FR-04, FR-05)', () => {
       );
 
       expect(jwt.signAsync).toHaveBeenCalledWith({
-        sub: 8,
+        sub: 'uuid-8',
         email: 'test@brewlite.com',
       });
 
@@ -192,7 +203,7 @@ describe('AuthService (FR-04, FR-05)', () => {
 
     it('TC07: Sai mật khẩu trả lỗi 401', async () => {
       users.findByEmailWithPassword.mockResolvedValue({
-        id: 8,
+        idUser: 'uuid-8',
         email: 'test@brewlite.com',
         passwordHash: 'stored-hash',
       });
@@ -213,7 +224,7 @@ describe('AuthService (FR-04, FR-05)', () => {
 
     it('TC08: Thiếu passwordHash trả lỗi 401', async () => {
       users.findByEmailWithPassword.mockResolvedValue({
-        id: 8,
+        idUser: 'uuid-8',
         email: 'test@brewlite.com',
       });
 
