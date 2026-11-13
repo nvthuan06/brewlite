@@ -10,13 +10,36 @@ import type {
 } from "../../../interface/payment";
 import Link from "next/link";
 
+function readCheckoutFromSession(orderId: string) {
+  if (typeof window === "undefined") {
+    return { order: null as Order | null, detail: null as ChiTietPayment | null };
+  }
+
+  try {
+    const savedCheckout = sessionStorage.getItem(`checkout_${orderId}`);
+    if (!savedCheckout) {
+      return { order: null as Order | null, detail: null as ChiTietPayment | null };
+    }
+
+    const parsed = JSON.parse(savedCheckout) as CheckoutResponse["data"];
+    return {
+      order: (parsed?.order ?? null) as Order | null,
+      detail: (parsed?.detail ?? null) as ChiTietPayment | null,
+    };
+  } catch (error) {
+    console.error(error);
+    return { order: null as Order | null, detail: null as ChiTietPayment | null };
+  }
+}
+
 function PaymentContent() {
   const params = useParams();
   const orderId = params?.id as string;
 
-  const [order, setOrder] = useState<any>(null);
+  const initialCheckout = orderId ? readCheckoutFromSession(orderId) : { order: null as Order | null, detail: null as ChiTietPayment | null };
+  const [order, setOrder] = useState<Order | null>(initialCheckout.order);
   const [paymentDetail, setPaymentDetail] = useState<ChiTietPayment | null>(
-    null,
+    initialCheckout.detail,
   );
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
@@ -26,17 +49,6 @@ function PaymentContent() {
 
   useEffect(() => {
     if (!orderId) return;
-
-    const savedCheckout = sessionStorage.getItem(`checkout_${orderId}`);
-    if (savedCheckout) {
-      try {
-        const parsed: CheckoutResponse["data"] = JSON.parse(savedCheckout);
-        if (parsed?.order) setOrder(parsed.order);
-        if (parsed?.detail) setPaymentDetail(parsed.detail);
-      } catch (e) {
-        console.error(e);
-      }
-    }
 
     async function fetchOrder() {
       try {
@@ -61,7 +73,6 @@ function PaymentContent() {
     return () => clearInterval(interval);
   }, [orderId, apiUrl]);
 
-  // Hủy đơn hàng
   async function handleCancelOrder() {
     if (!orderId) return;
     setCancelling(true);
@@ -77,7 +88,7 @@ function PaymentContent() {
         throw new Error(result?.message ?? "Không thể hủy đơn hàng này.");
       }
 
-      setOrder((prev: any) => ({ ...prev, trangThai: "HUY" }));
+      setOrder((prev) => (prev ? { ...prev, trangThai: "HUY" } : prev));
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Lỗi khi hủy đơn hàng.");
     } finally {
@@ -108,15 +119,6 @@ function PaymentContent() {
     ["DANG_THANH_TOAN", "DA_NHAN", "THAT_BAI"] as TrangThaiDonHang[]
   ).includes(order.trangThai);
 
-  // Dự phòng trường hợp người dùng F5 làm mất sessionStorage thì vẫn tự dựng được link QR SePay
-  // const displayQrUrl =
-  //   qrCodeUrl ||
-  //   `https://qr.sepay.vn/img?acc=0000000002&bank=MBBank&amount=${Number(
-  //     order.tongTien || 0,
-  //   )}&des=DH${String(order.idOrder || orderId)
-  //     .slice(0, 6)
-  //     .toUpperCase()}`;
-
   return (
     <main className="container mx-auto p-6 max-w-xl">
       <div className="bg-white border-2 border-gray-800 rounded-2xl shadow-sm p-6 text-center">
@@ -130,7 +132,6 @@ function PaymentContent() {
           </p>
         )}
 
-        {/* Hiển thị mã QR SePay khi đơn đang chờ thanh toán */}
         {order.trangThai === "DANG_THANH_TOAN" && paymentDetail?.qrCodeUrl && (
           <div className="my-6 flex flex-col items-center">
             <p className="text-sm text-gray-600 mb-3">
@@ -153,7 +154,6 @@ function PaymentContent() {
           </div>
         )}
 
-        {/* Thanh toán thành công */}
         {["DA_NHAN", "DANG_CHUAN_BI", "HOAN_TAT"].includes(order.trangThai) && (
           <div className="my-6 p-4 bg-emerald-50 text-emerald-800 rounded-xl">
             <p className="font-bold text-lg">Đã nhận thanh toán!</p>
@@ -161,7 +161,6 @@ function PaymentContent() {
           </div>
         )}
 
-        {/* Đã hủy */}
         {order.trangThai === "HUY" && (
           <div className="my-6 p-4 bg-red-50 text-red-800 rounded-xl">
             <p className="font-bold">Đơn hàng đã bị hủy.</p>

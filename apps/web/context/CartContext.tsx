@@ -1,8 +1,7 @@
-
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Product, ProductSizeOption, ProductToppingOption} from "../interface/product";
+import { Product, ProductSizeOption, ProductToppingOption } from "../interface/product";
 import { CartItem } from "@/interface/cart";
 
 interface CartContextType {
@@ -11,7 +10,7 @@ interface CartContextType {
     product: Product,
     size: ProductSizeOption,
     topping: ProductToppingOption | null,
-    soLuong: number
+    soLuong: number,
   ) => void;
   updateQuantity: (cartItemId: string, soLuongMoi: number) => void;
   removeFromCart: (cartItemId: string) => void;
@@ -25,24 +24,25 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 const CART_STORAGE_KEY = "brewlite_cart";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    if (typeof window === "undefined") {
+      return [];
+    }
 
-  useEffect(() => {
     try {
       const saved = localStorage.getItem(CART_STORAGE_KEY);
-      if (saved) {
-        setCartItems(JSON.parse(saved));
-      }
-    } catch (e) {
-      console.error("Lỗi đọc giỏ hàng:", e);
+      return saved ? (JSON.parse(saved) as CartItem[]) : [];
+    } catch (error) {
+      console.error("Lỗi đọc giỏ hàng:", error);
+      return [];
     }
-  }, []);
+  });
 
   useEffect(() => {
     try {
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
-    } catch (e) {
-      console.error("Lỗi lưu giỏ hàng:", e);
+    } catch (error) {
+      console.error("Lỗi lưu giỏ hàng:", error);
     }
   }, [cartItems]);
 
@@ -55,10 +55,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + getUnitPrice(item) * item.soLuong,
-    0
+    0,
   );
 
-  const addToCart = (product: Product, size: ProductSizeOption, topping: ProductToppingOption | null, soLuong: number) => {
+  const addToCart = (
+    product: Product,
+    size: ProductSizeOption,
+    topping: ProductToppingOption | null,
+    soLuong: number,
+  ) => {
     const cartItemId = `${product.idProduct}-${size.code}-${topping?.code ?? "none"}`;
 
     setCartItems((prev) => {
@@ -92,8 +97,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (soLuongMoi < 1) return;
     setCartItems((prev) =>
       prev.map((item) =>
-        item.cartItemId === cartItemId ? { ...item, soLuong: soLuongMoi } : item
-      )
+        item.cartItemId === cartItemId ? { ...item, soLuong: soLuongMoi } : item,
+      ),
     );
   };
 
@@ -103,7 +108,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = () => {
     setCartItems([]);
-    localStorage.removeItem(CART_STORAGE_KEY);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(CART_STORAGE_KEY);
+    }
   };
 
   return (

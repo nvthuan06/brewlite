@@ -19,8 +19,10 @@ function ProductDetailContent() {
   const { addToCart } = useCart();
 
   const [product, setProduct] = useState<Product | null>(null);
-  const [selectedSize, setSelectedSize] = useState<string>("S");
-  const [selectedTopping, setSelectedTopping] = useState<string>("");
+  const [selectedSize, setSelectedSize] = useState<ProductSizeOption["code"]>("S");
+  const [selectedTopping, setSelectedTopping] = useState<
+    ProductToppingOption["code"] | ""
+  >("");
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +51,7 @@ function ProductDetailContent() {
           setLoading(false);
         }
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         setError(err.message);
         setLoading(false);
       });
@@ -119,7 +121,6 @@ function ProductDetailContent() {
           {Number(product.giaProduct).toLocaleString("vi-VN")} đ
         </p>
 
-        {/* Chọn Size */}
         <div className="mb-6">
           <h2 className="font-semibold mb-2">Chọn Size</h2>
           <div className="flex flex-wrap gap-2">
@@ -142,7 +143,6 @@ function ProductDetailContent() {
           </div>
         </div>
 
-        {/* Chọn Topping */}
         <div className="mb-6">
           <h2 className="font-semibold mb-2">Chọn Topping (tùy chọn)</h2>
           <div className="flex flex-wrap gap-2">
@@ -177,18 +177,15 @@ function ProductDetailContent() {
           </div>
         </div>
 
-        <div className="border-t border-gray-700 pt-4 text-sm text-gray">
+        <div className="border-t border-gray-700 pt-4 text-sm text-gray-300">
           Đã chọn:{" "}
-          <span className="font-semibold text-black">Size {selectedSize}</span>
+          <span className="font-semibold text-white">Size {selectedSize}</span>
           {selectedTopping && (
             <>
               {" "}
               &bull;{" "}
-              <span className="font-semibold text-black">
-                {
-                  product.toppings?.find((t) => t.code === selectedTopping)
-                    ?.label
-                }
+              <span className="font-semibold text-white">
+                {product.toppings?.find((t) => t.code === selectedTopping)?.label}
               </span>
             </>
           )}
@@ -198,20 +195,18 @@ function ProductDetailContent() {
             type="button"
             disabled={!conHang}
             onClick={() => {
-              const sizeObj = product.sizes?.find(
-                (s) => s.code === selectedSize,
-              ) ?? {
-                code: selectedSize as ProductSizeOption["code"],
-                label: `Size ${selectedSize}`,
-                extraPrice: 0,
-              };
+              const sizeObj: ProductSizeOption =
+                product.sizes?.find((s) => s.code === selectedSize) ?? {
+                  code: selectedSize,
+                  label: `Size ${selectedSize}`,
+                  extraPrice: 0,
+                };
 
-              const toppingObj = selectedTopping
-                ? (product.toppings?.find((t) => t.code === selectedTopping) ??
-                  null)
+              const toppingObj: ProductToppingOption | null = selectedTopping
+                ? product.toppings?.find((t) => t.code === selectedTopping) ?? null
                 : null;
 
-              addToCart(product as any, sizeObj as any, toppingObj as any, 1);
+              addToCart(product, sizeObj, toppingObj, 1);
               router.push("/cart");
             }}
             className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg transition disabled:opacity-50 cursor-pointer"
@@ -237,3 +232,4 @@ export default function ProductDetailPage() {
     </Suspense>
   );
 }
+
