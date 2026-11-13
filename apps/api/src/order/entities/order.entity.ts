@@ -25,15 +25,15 @@ export class Order {
     })
     trangThai: TrangThaiDonHang;
 
+    @ManyToOne(() => User, (user) => user.orders, { nullable: false, onDelete: 'RESTRICT' })
+    @JoinColumn({ name: 'idUser' })
+    user: User;
+
     @OneToMany(()=>OrderItem, (orderItem)=>orderItem.order,{cascade:true})
     orderitem:OrderItem[];
 
     @ManyToOne(() => Promotion, (promotion) =>promotion.orders ,{ nullable: true })
     @JoinColumn({ name: 'idPromotion' })
     promotion: Promotion;
-
-    @ManyToOne(() => User, (user) => user.orders)
-    @JoinColumn({ name: 'userId' })
-    user: User;
     
 }

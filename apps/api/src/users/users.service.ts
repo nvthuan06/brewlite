@@ -21,18 +21,20 @@ export class UsersService {
       where: { email },
       
       select: {
-        id: true,
+        idUser: true,
+        tenUser: true,
         email: true,
         passwordHash: true,
-        loyaltyPoints: true,
+        vaiTro: true,
+        diemThuong: true,
       },
 
     });
   }
 
   // FR-04: lưu user, không bao giờ nhận mật khẩu thô ở đây.
-  async create(email: string, passwordHash: string): Promise<User> {
-    const user = this.usersRepository.create({ email, passwordHash });
+  async create(tenUser: string, email: string, passwordHash: string): Promise<User> {
+    const user = this.usersRepository.create({ tenUser, email, passwordHash, vaiTro: 'KHACH_HANG', diemThuong: 0 });
     return this.usersRepository.save(user);
   }
 }

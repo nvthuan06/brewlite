@@ -22,7 +22,7 @@ describe('UsersService', () => {
 
   it('findByEmail: tìm người dùng bằng email', async () => {
     repo.findOne.mockResolvedValue({
-      id: 3,
+      idUser: 'uuid-3',
       email: 'test@brewlite.com',
     });
 
@@ -34,7 +34,7 @@ describe('UsersService', () => {
       where: { email: 'test@brewlite.com' },
     });
 
-    expect(result?.id).toBe(3);
+    expect(result?.idUser).toBe('uuid-3');
   });
 
   it('findByEmail: trả null khi chưa đăng ký', async () => {
@@ -47,9 +47,12 @@ describe('UsersService', () => {
 
   it('findByEmailWithPassword: lấy passwordHash', async () => {
     repo.findOne.mockResolvedValue({
-      id: 3,
+      idUser: 'uuid-3',
+      tenUser: 'Test User',
       email: 'test@brewlite.com',
       passwordHash: 'hash',
+      vaiTro: 'KHACH_HANG',
+      diemThuong: 0,
     });
 
     await service.findByEmailWithPassword(
@@ -67,24 +70,28 @@ describe('UsersService', () => {
 
   it('create: tạo và lưu tài khoản', async () => {
     const entity = {
+      tenUser: 'Test User',
       email: 'test@brewlite.com',
       passwordHash: 'hash',
+      vaiTro: 'KHACH_HANG',
+      diemThuong: 0,
     };
 
     repo.create.mockReturnValue(entity);
 
     repo.save.mockResolvedValue({
-      id: 3,
+      idUser: 'uuid-3',
       ...entity,
     });
 
     const result = await service.create(
+      'Test User',
       'test@brewlite.com',
       'hash',
     );
 
     expect(repo.create).toHaveBeenCalledWith(entity);
     expect(repo.save).toHaveBeenCalledWith(entity);
-    expect(result.id).toBe(3);
+    expect(result.idUser).toBe('uuid-3');
   });
 });

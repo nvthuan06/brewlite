@@ -5,7 +5,7 @@ import { LoginDto } from './dto/login.dto.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
 
-type AuthenticatedRequest = Request & { user: { userId: number; email: string } };
+type AuthenticatedRequest = Request & { user: { userId: string; email: string } };
 
 @Controller('auth')
 export class AuthController {

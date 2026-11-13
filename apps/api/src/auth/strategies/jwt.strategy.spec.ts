@@ -21,12 +21,12 @@ describe('JwtStrategy', () => {
     );
 
     const result = strategy.validate({
-      sub: 23,
+      sub: 'uuid-23',
       email: 'test@brewlite.com',
     });
 
     expect(result).toEqual({
-      userId: 23,
+      userId: 'uuid-23',
       email: 'test@brewlite.com',
     });
   });

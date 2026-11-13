@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { Product } from '../../interface/product';
-import error from 'next/dist/api/error';
 import Link from 'next/link';
 export default function MenuPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -10,7 +9,7 @@ export default function MenuPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:3000/products')
+    fetch('/backend/products')
       .then((res) => {
         if (!res.ok) throw new Error('Mất kết nối');
         return res.json();
