@@ -51,4 +51,13 @@ export class OrderController {
       message: 'Hủy đơn hàng thành công',
     };
   }
+
+  @Get(':id')
+  async findOne(@Param('id') idOrder: string) {
+    const order = await this.orderService.findOne(idOrder);
+    return {
+      data: order,
+      message: 'Lấy thông tin đơn hàng thành công',
+    };
+  }
 }

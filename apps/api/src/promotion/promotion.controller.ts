@@ -24,4 +24,9 @@ export class PromotionController {
   TrangThai(@Param('id') id: string) {
     return this.promotionService.toggleStatus(id);
   }
+
+  @Delete(':id')
+  Xoa(@Param('id') id: string) {
+    return this.promotionService.goMaGiamGia(id);
+  }
 }

@@ -11,7 +11,7 @@ export class CreatePromotionDto {
 
   @IsDateString({}, { message: 'Hạn sử dụng phải là định dạng ngày tháng hợp lệ (ISO 8601)' })
   @IsNotEmpty({ message: 'Hạn sử dụng không được để trống' })
-  hanPromotion: string;
+  hanPromotion: Date;
 
   @IsBoolean({ message: 'Trạng thái hoạt động phải là true hoặc false' })
   @IsOptional()

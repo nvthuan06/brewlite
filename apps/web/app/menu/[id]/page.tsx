@@ -1,17 +1,28 @@
-'use client';
+"use client";
 
-import React, { Suspense, useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { Product } from '../../../interface/product';
+import React, { Suspense, useEffect, useState } from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useCart } from "@/context/CartContext";
+import { useRouter } from "next/navigation";
+import {
+  ProductSizeOption,
+  ProductToppingOption,
+} from "../../../interface/product";
+import { Product } from "../../../interface/product";
 
 function ProductDetailContent() {
   const params = useParams();
   const id = params?.id;
 
+  const router = useRouter();
+  const { addToCart } = useCart();
+
   const [product, setProduct] = useState<Product | null>(null);
-  const [selectedSize, setSelectedSize] = useState<string>('S');
-  const [selectedTopping, setSelectedTopping] = useState<string>('');
+  const [selectedSize, setSelectedSize] = useState<ProductSizeOption["code"]>("S");
+  const [selectedTopping, setSelectedTopping] = useState<
+    ProductToppingOption["code"] | ""
+  >("");
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +38,7 @@ function ProductDetailContent() {
           return null;
         }
         if (!res.ok) {
-          throw new Error('Không thể tải chi tiết sản phẩm');
+          throw new Error("Không thể tải chi tiết sản phẩm");
         }
         return res.json();
       })
@@ -40,7 +51,7 @@ function ProductDetailContent() {
           setLoading(false);
         }
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         setError(err.message);
         setLoading(false);
       });
@@ -98,19 +109,18 @@ function ProductDetailContent() {
           <span
             className={`text-xs font-semibold px-2.5 py-1 rounded ${
               conHang
-                ? 'bg-green-900 text-green-300'
-                : 'bg-red-900 text-red-300'
+                ? "bg-green-900 text-green-300"
+                : "bg-red-900 text-red-300"
             }`}
           >
-            {conHang ? `Còn hàng (${product.soLuong})` : 'Hết hàng'}
+            {conHang ? `Còn hàng (${product.soLuong})` : "Hết hàng"}
           </span>
         </div>
 
         <p className="text-xl font-bold mb-6">
-          {Number(product.giaProduct).toLocaleString('vi-VN')} đ
+          {Number(product.giaProduct).toLocaleString("vi-VN")} đ
         </p>
 
-        {/* Chọn Size */}
         <div className="mb-6">
           <h2 className="font-semibold mb-2">Chọn Size</h2>
           <div className="flex flex-wrap gap-2">
@@ -121,29 +131,28 @@ function ProductDetailContent() {
                 onClick={() => setSelectedSize(size.code)}
                 className={`px-4 py-2 border rounded-md text-sm font-medium transition cursor-pointer ${
                   selectedSize === size.code
-                    ? 'border-blue-500 bg-blue-600 text-white'
-                    : 'border-gray-600 hover:border-gray-400'
+                    ? "border-blue-500 border-2"
+                    : "border-gray-600 hover:border-gray-400"
                 }`}
               >
                 {size.label}
                 {size.extraPrice > 0 &&
-                  ` (+${size.extraPrice.toLocaleString('vi-VN')} đ)`}
+                  ` (+${size.extraPrice.toLocaleString("vi-VN")} đ)`}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Chọn Topping */}
         <div className="mb-6">
           <h2 className="font-semibold mb-2">Chọn Topping (tùy chọn)</h2>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => setSelectedTopping('')}
+              onClick={() => setSelectedTopping("")}
               className={`px-4 py-2 border rounded-md text-sm font-medium transition cursor-pointer ${
-                selectedTopping === ''
-                  ? 'border-blue-500 bg-blue-600 text-white'
-                  : 'border-gray-600 hover:border-gray-400'
+                selectedTopping === ""
+                  ? "border-blue-500 border-2"
+                  : "border-gray-600 hover:border-gray-400"
               }`}
             >
               Không topping
@@ -156,33 +165,54 @@ function ProductDetailContent() {
                 onClick={() => setSelectedTopping(topping.code)}
                 className={`px-4 py-2 border rounded-md text-sm font-medium transition cursor-pointer ${
                   selectedTopping === topping.code
-                    ? 'border-blue-500 bg-blue-600 text-white'
-                    : 'border-gray-600 hover:border-gray-400'
+                    ? "border-blue-500 border-2"
+                    : "border-gray-600 hover:border-gray-400"
                 }`}
               >
                 {topping.label}
                 {topping.extraPrice > 0 &&
-                  ` (+${topping.extraPrice.toLocaleString('vi-VN')} đ)`}
+                  ` (+${topping.extraPrice.toLocaleString("vi-VN")} đ)`}
               </button>
             ))}
           </div>
         </div>
 
         <div className="border-t border-gray-700 pt-4 text-sm text-gray-300">
-          Đã chọn:{' '}
+          Đã chọn:{" "}
           <span className="font-semibold text-white">Size {selectedSize}</span>
           {selectedTopping && (
             <>
-              {' '}
-              &bull;{' '}
+              {" "}
+              &bull;{" "}
               <span className="font-semibold text-white">
-                {
-                  product.toppings?.find((t) => t.code === selectedTopping)
-                    ?.label
-                }
+                {product.toppings?.find((t) => t.code === selectedTopping)?.label}
               </span>
             </>
           )}
+        </div>
+        <div className="mt-5 flex gap-3">
+          <button
+            type="button"
+            disabled={!conHang}
+            onClick={() => {
+              const sizeObj: ProductSizeOption =
+                product.sizes?.find((s) => s.code === selectedSize) ?? {
+                  code: selectedSize,
+                  label: `Size ${selectedSize}`,
+                  extraPrice: 0,
+                };
+
+              const toppingObj: ProductToppingOption | null = selectedTopping
+                ? product.toppings?.find((t) => t.code === selectedTopping) ?? null
+                : null;
+
+              addToCart(product, sizeObj, toppingObj, 1);
+              router.push("/cart");
+            }}
+            className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg transition disabled:opacity-50 cursor-pointer"
+          >
+            {conHang ? "Thêm vào giỏ hàng" : "Hết hàng"}
+          </button>
         </div>
       </div>
     </div>
@@ -202,3 +232,4 @@ export default function ProductDetailPage() {
     </Suspense>
   );
 }
+
