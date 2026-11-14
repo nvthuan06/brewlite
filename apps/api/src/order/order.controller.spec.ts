@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundException } from '@nestjs/common';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OrderController } from './order.controller.js';
 import { OrderService } from './order.service.js';
 import { TrangThaiDonHang } from './enum/order.enum.js';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-describe('OrderController', () => {
+describe('OrderController - unit tests', () => {
   let controller: OrderController;
   let orderService: {
     CheckOut: ReturnType<typeof vi.fn>;
@@ -34,11 +35,10 @@ describe('OrderController', () => {
         },
       ],
     }).compile();
-
     controller = module.get<OrderController>(OrderController);
   });
 
-  it('should be defined', () => {
+  it('được khởi tạo', () => {
     expect(controller).toBeDefined();
   });
 

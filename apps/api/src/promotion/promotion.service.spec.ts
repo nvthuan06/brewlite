@@ -50,7 +50,7 @@ describe('PromotionService', () => {
     service = module.get<PromotionService>(PromotionService);
   });
 
-  it('Promotion Service', () => {
+  it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
