@@ -8,13 +8,6 @@ import { Order } from '../order/entities/order.entity.js';
 import { TrangThaiDonHang } from '../order/enum/order.enum.js';
 
 describe('PromotionService - business rules', () => {
-  const promotionRepo = {
-    findOne: vi.fn(),
-    create: vi.fn(),
-    save: vi.fn(),
-    find: vi.fn(),
-  };
-  const orderRepo = { findOne: vi.fn(), save: vi.fn() };
   let service: PromotionService;
   let promotionRepo: {
     findOne: ReturnType<typeof vi.fn>;
