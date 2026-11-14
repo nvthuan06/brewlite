@@ -1,0 +1,35 @@
+import { test, expect } from '@playwright/test';
+
+test('test', async ({ page }) => {
+  await page.goto('http://localhost:3001/');
+  await page.getByRole('link', { name: 'Xem Thực Đơn' }).click();
+  await page.getByRole('link', { name: 'Sinh tố bơ 45.000 đ Xem chi' }).click();
+  await page.getByRole('button', { name: 'Size M (+5.000 đ)' }).click();
+  await page.getByRole('button', { name: 'Phô mai (+8.000 đ)' }).click();
+  await page.getByRole('button', { name: 'Thêm vào giỏ hàng' }).click();
+  await expect(page).toHaveURL(/\/cart/);
+  await page.getByRole('link', { name: 'Tiếp tục mua hàng' }).click();
+  await page.getByRole('link', { name: 'Cà phê sữa 30.000 đ Xem chi' }).click();
+  await page.getByRole('button', { name: 'Size XL (+10.000 đ)' }).click();
+  await page.getByRole('button', { name: 'Trân châu (+5.000 đ)' }).click();
+  await page.getByRole('button', { name: 'Thêm vào giỏ hàng' }).click();
+  await expect(page).toHaveURL(/\/cart/);
+  await page.getByRole('button', { name: '+' }).first().click();
+  await page.getByRole('button', { name: '+' }).nth(1).click();
+  await page.getByRole('button', { name: '-' }).first().click();
+  await page.getByRole('link', { name: 'Thực đơn' }).click();
+  await page.getByRole('link', { name: 'Cappuccino 35.000 đ Xem chi' }).click();
+  await page.getByRole('button', { name: 'Thêm vào giỏ hàng' }).click();
+  await expect(page).toHaveURL(/\/cart/);
+  await page.getByRole('button', { name: '+' }).nth(2).dblclick();
+  await page.getByRole('button', { name: 'Tiến hành Đặt hàng' }).click();
+  await page.getByRole('link', { name: 'Đăng nhập' }).click();
+  await page.getByRole('textbox', { name: 'Email' }).click();
+  await page.getByRole('textbox', { name: 'Email' }).fill('hello@gmail.com');
+  await page.getByRole('textbox', { name: 'Mật khẩu' }).click();
+  await page.getByRole('textbox', { name: 'Mật khẩu' }).fill('12345678');
+  await page.getByRole('button', { name: 'Đăng nhập' }).click();
+  await page.getByRole('link', { name: 'Xem Thực Đơn' }).click();
+  await page.getByRole('link', { name: 'Giỏ hàng' }).click();
+  await page.getByRole('button', { name: 'Tiến hành Đặt hàng' }).click();
+});
