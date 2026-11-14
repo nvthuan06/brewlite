@@ -1,8 +1,21 @@
-FROM node:24-bookworm-slim
+
+FROM node:20-alpine AS builder
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --no-audit --no-fund
+
+COPY package*.json ./
+RUN npm ci
+
 COPY . .
-ENV NODE_ENV=development
-EXPOSE 3000
-CMD ["npm", "run", "start:dev", "--", "--hostname", "0.0.0.0"]
+RUN npm run build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+COPY --from=builder /app/dist ./dist
+
+EXPOSE 3001
+CMD ["node", "dist/main.js"]
