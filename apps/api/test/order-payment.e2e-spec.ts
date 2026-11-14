@@ -1,15 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, Logger } from '@nestjs/common';
 import request from 'supertest';
-import { AppModule } from '../apps/api/src/app.module';
+import { AppModule } from '../src/app.module.js';
 import { DataSource } from 'typeorm';
-import { describe, it, expect, beforeAll, beforeEach, afterAll } from '@jest/globals';
-import { Product } from '../apps/api/src/products/entities/product.entity';
-import { User } from '../apps/api/src/users/entities/user.entity';
-import { Order } from '../apps/api/src/order/entities/order.entity';
-import { Payment } from '../apps/api/src/payment/entities/payment.entity';
-import { TrangThaiDonHang } from '../apps/api/src/order/enum/order.enum';
-import { TrangThaiThanhToan } from '../apps/api/src/payment/enum/payment.enum';
+import { Product } from '../src/products/entities/product.entity.js';
+import { User } from '../src/users/entities/user.entity.js';
+import { Order } from '../src/order/entities/order.entity.js';
+import { Payment } from '../src/payment/entities/payment.entity.js';
+import { TrangThaiDonHang } from '../src/order/enum/order.enum.js';
+import { TrangThaiThanhToan } from '../src/payment/enum/payment.enum.js';
 import { getConnectionToken } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 

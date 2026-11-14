@@ -45,7 +45,7 @@ function PaymentContent() {
   const [cancelling, setCancelling] = useState(false);
   const [error, setError] = useState("");
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
   useEffect(() => {
     if (!orderId) return;
