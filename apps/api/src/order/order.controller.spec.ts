@@ -4,7 +4,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OrderController } from './order.controller.js';
 import { OrderService } from './order.service.js';
 import { TrangThaiDonHang } from './enum/order.enum.js';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('OrderController - unit tests', () => {
   let controller: OrderController;
