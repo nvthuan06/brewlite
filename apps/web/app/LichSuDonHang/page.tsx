@@ -171,7 +171,7 @@ export default function HistoryOrderPage() {
                   <div>
                     <span className="font-bold text-gray-800 font-mono text-sm">
                       Đơn #{
-                        (order as any).payment?.maChuyenKhoan || 
+                        order.payment?.maChuyenKhoan || 
                         order.idOrder.split('-')[0]
                       }
                     </span>

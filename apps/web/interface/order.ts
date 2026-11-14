@@ -1,5 +1,6 @@
 import { Promotion } from './promotion';
 import { ProductSizeOption, ProductToppingOption, Product } from './product.js';
+import type {Payment} from '../interface/payment'
 
 export type TrangThaiDonHang =
   | 'DANG_THANH_TOAN'
@@ -38,4 +39,5 @@ export interface Order {
   trangThai: TrangThaiDonHang;
   promotion?: Promotion | null;
   orderitem: OrderItem[];
+  payment?: Payment | null;
 }
