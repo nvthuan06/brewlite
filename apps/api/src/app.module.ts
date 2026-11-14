@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module.js';
 import { OrderModule } from './order/order.module.js';
 import { PaymentModule } from './payment/payment.module.js';
 import { PromotionModule } from './promotion/promotion.module.js';
+import { HealthModule } from './health/health.module.js';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { PromotionModule } from './promotion/promotion.module.js';
     OrderModule,
     PaymentModule,
     PromotionModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -35,7 +35,7 @@ export class PaymentService {
         }
     }
     async handWeHook(payload:any){
-        if(payload.transferType==='out'|| payload.amontIn<=0){
+        if(payload.transferType==='out'|| payload.transferAmount<=0){
             return{
                 success:true,
                 massage:'Bỏ qua giao dịch'
@@ -59,17 +59,18 @@ export class PaymentService {
                 .leftJoinAndSelect('payment.order', 'order')
                 .leftJoinAndSelect('order.orderitem', 'orderitem')
                 .leftJoinAndSelect('orderitem.product', 'product')
-                .where(':content ILIKE CONCAT(\'%\', payment.maChuyenKhoan, \'%\')', {content: payload.transactionContent})
+                .where(':content ILIKE CONCAT(\'%\', payment.maChuyenKhoan, \'%\')', { content: payload.content })
                 .andWhere('payment.trangThai = :status', { status: TrangThaiThanhToan.PENDING })
                 .getOne();
 
-            if(!payment){
-                await queryRunner.release();
-                return{
-                    success:true,
-                    massage:'Không thấy đơn hàng'
-                }
+            console.log(payment);
+
+            if (!payment) {
+                console.log("❌ LỖI LOGIC: Không tìm thấy mã PENDING nào khớp với content từ SePay:", payload.content);
+                await queryRunner.rollbackTransaction();
+                return { success: true, message: 'Không thấy đơn hàng' };
             }
+                console.log("✅ Đã tìm thấy thanh toán cần duyệt:", payment.maChuyenKhoan);
             const THOI_GIAN_CHO_PHEP = 15 * 60 * 1000; 
             const thoiGianHienTai = new Date().getTime();
             const thoiGianTaoDon = new Date(payment.order.ngayDatHang).getTime(); 
@@ -85,7 +86,7 @@ export class PaymentService {
                 await queryRunner.commitTransaction();
                 return { success: true, message: 'Thanh toán trễ, đơn hàng đã bị hủy.' };
             }
-            if(payload.amountIn>=payment.soTien){
+            if(payload.transferAmount>=payment.soTien){
                 payment.trangThai=TrangThaiThanhToan.SUCCESS_PAYMENT;
                 payment.ngayThanhToan = new Date(payload.transactionDate);
                 payment.IdempotencyKey=payload.id;
@@ -110,7 +111,7 @@ export class PaymentService {
                 await queryRunner.manager.save(Payment, payment);
             }
             await queryRunner.commitTransaction();
-            return{sucess:true};
+            return{success:true};
         }catch(error){
             await queryRunner.rollbackTransaction();
             if ((error as any).code === '23505' || (error as any).code === 'ER_DUP_ENTRY') {

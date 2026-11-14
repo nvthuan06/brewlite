@@ -9,7 +9,7 @@ export default function MenuPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:3000/products')
+    fetch('http://localhost:3001/products')
       .then((res) => {
         if (!res.ok) throw new Error('Mất kết nối');
         return res.json();

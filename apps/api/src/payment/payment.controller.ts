@@ -7,9 +7,10 @@ export class PaymentController {
   
   @Post('webhook-sepay')
   async SepayWebhook(
-    @Body() payload:SePayWebhookDto,
+    @Body() payload:any,
     @Headers('Authorization') authHeader: string,
   ) {
+    console.log("PAYLOAD TỪ SEPAY:", payload);
     return this.paymentService.handWeHook(payload);
   }
 }

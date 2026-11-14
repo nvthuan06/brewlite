@@ -46,6 +46,7 @@ export function AuthProvider({
   const [user, setUser] = useState<ProfileResponse | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  
 
   // ==========================================
   // RESTORE SESSION
@@ -101,11 +102,11 @@ export function AuthProvider({
   // ==========================================
   // LOGIN
   // ==========================================
-
+  
   const login = useCallback(
     async (email: string, password: string): Promise<void> => {
       const result = await apiRequest<LoginResponse>(
-        "/auth/login",
+        "auth/login",
         {
           method: "POST",
           body: JSON.stringify({
