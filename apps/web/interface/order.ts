@@ -40,5 +40,4 @@ export interface Order {
   promotion?: Promotion | null;
   payment?: Payment | null;
   orderitem: OrderItem[];
-  payment?: Payment | null;
 }
