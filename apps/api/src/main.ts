@@ -7,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
   // 1. Cấu hình CORS (Chỉ gọi 1 lần duy nhất)
-  app.enableCors({ origin: 'http://localhost:3000' });
+  app.enableCors({ origin: ['http://localhost:3000', 'http://localhost:3001'] });
   
   // 2. Cấu hình ValidationPipe
   app.useGlobalPipes(new ValidationPipe({

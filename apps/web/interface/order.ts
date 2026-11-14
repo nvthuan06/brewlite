@@ -17,7 +17,7 @@ export interface OrderItemPayload {
 }
 
 export interface CreateOrderPayload {
-  idempotencyKey?: string;
+  //idempotencyKey?: string;
   maPromotion?: string;
   items: OrderItemPayload[];
 }

@@ -1,3 +1,5 @@
+const api = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
     super(message);
@@ -19,9 +21,13 @@ export async function apiRequest<T>(
   options: RequestInit = {},
   token?: string,
 ): Promise<T> {
+  const url = path.startsWith("http")
+    ? path
+    : `${api}${path.startsWith("/") ? "" : "/"}${path}`;
+    
   let response: Response;
   try {
-    response = await fetch(`/backend${path}`, {
+    response = await fetch(`${url}`, {
       ...options,
       headers: {
         ...(options.body ? { "Content-Type": "application/json" } : {}),
