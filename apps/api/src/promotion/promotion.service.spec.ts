@@ -7,7 +7,7 @@ import { Promotion } from './entities/promotion.entity.js';
 import { Order } from '../order/entities/order.entity.js';
 import { TrangThaiDonHang } from '../order/enum/order.enum.js';
 
-describe('PromotionService - business rules', () => {
+describe('PromotionService', () => {
   let service: PromotionService;
   let promotionRepo: {
     findOne: ReturnType<typeof vi.fn>;
@@ -50,7 +50,7 @@ describe('PromotionService - business rules', () => {
     service = module.get<PromotionService>(PromotionService);
   });
 
-  it('Promotion Service', () => {
+  it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
