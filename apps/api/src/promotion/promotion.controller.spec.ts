@@ -19,7 +19,19 @@ describe('PromotionController - unit tests', () => {
     vi.resetAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PromotionController],
-      providers: [{ provide: PromotionService, useValue: serviceMock }],
+      providers: [
+        {
+          provide: PromotionService,
+          useValue: {
+            taoMaMoi: vi.fn(),
+            findAll: vi.fn(),
+            kiemTraHopLe: vi.fn(),
+            apDungMa: vi.fn(),
+            goMaGiamGia: vi.fn(),
+            toggleStatus: vi.fn(),
+          },
+        },
+      ],
     }).compile();
     controller = module.get<PromotionController>(PromotionController);
   });
