@@ -111,7 +111,7 @@ export class PaymentService {
                 await queryRunner.manager.save(Payment, payment);
             }
             await queryRunner.commitTransaction();
-            return{sucess:true};
+            return{success:true};
         }catch(error){
             await queryRunner.rollbackTransaction();
             if ((error as any).code === '23505' || (error as any).code === 'ER_DUP_ENTRY') {

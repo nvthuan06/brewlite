@@ -1,6 +1,6 @@
 import { Promotion } from './promotion';
 import { ProductSizeOption, ProductToppingOption, Product } from './product.js';
-import type { Payment } from './payment';
+import type {Payment} from '../interface/payment'
 
 export type TrangThaiDonHang =
   | 'DANG_THANH_TOAN'

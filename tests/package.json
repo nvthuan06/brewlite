@@ -1,0 +1,54 @@
+{
+  "type": "module",
+  "devDependencies": {
+    "@nestjs/testing": "^12.5.0",
+    "@types/jest": "^30.0.0",
+    "@types/supertest": "^7.2.1",
+    "dotenv-cli": "^11.1.0",
+    "jest": "^30.5.2",
+    "supertest": "^7.3.2",
+    "ts-jest": "^29.4.15"
+  },
+  "dependencies": {
+    "@nestjs/jwt": "^12.0.5",
+    "@nestjs/typeorm": "^12.0.3",
+    "pg": "^8.23.1",
+    "typeorm": "^1.1.3"
+  },
+  "scripts": {
+    "test:e2e": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": ".",
+    "testEnvironment": "node",
+    "testRegex": ".e2e-spec.ts$",
+    "extensionsToTreatAsEsm": [
+      ".ts"
+    ],
+    "moduleNameMapper": {
+      "^@nestjs/(.*)$": "<rootDir>/../apps/api/node_modules/@nestjs/$1",
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    },
+    "transform": {
+      "^.+\\.(t|j)s$": [
+        "ts-jest",
+        {
+          "useESM": true,
+          "tsconfig": {
+            "module": "ESNext",
+            "target": "ES2022",
+            "moduleResolution": "node",
+            "esModuleInterop": true,
+            "experimentalDecorators": true,
+            "emitDecoratorMetadata": true
+          }
+        }
+      ]
+    }
+  }
+}
