@@ -31,22 +31,22 @@ export function SiteHeader() {
           >
             Thực đơn
           </Link>
-          <Link
-            href="/cart"
-            className="rounded-lg px-3 py-2 text-stone-700 hover:bg-amber-50"
-          >
-            Giỏ hàng
-          </Link>
-          <Link
-            href="/LichSuDonHang"
-            className="rounded-lg px-3 py-2 text-stone-700 hover:bg-amber-50"
-          >
-            Xem lịch sử
-          </Link>
           {loading ? (
             <span className="text-stone-500">Đang kiểm tra đăng nhập...</span>
           ) : user ? (
             <>
+              <Link
+                href="/cart"
+                className="rounded-lg px-3 py-2 text-stone-700 hover:bg-amber-50"
+              >
+                Giỏ hàng
+              </Link>
+              <Link
+                href="/LichSuDonHang"
+                className="rounded-lg px-3 py-2 text-stone-700 hover:bg-amber-50"
+              >
+                Xem lịch sử
+              </Link>
               <span
                 className="max-w-48 truncate text-stone-700"
                 title={user.email}

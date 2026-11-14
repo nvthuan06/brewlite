@@ -8,6 +8,7 @@ import type {
   ProductSizeOption,
   ProductToppingOption,
 } from "../../interface/product";
+import { useAuth } from "@/context/AuthContext";
 
 const api = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
@@ -40,16 +41,28 @@ const STATUS_LABELS: Record<TrangThaiDonHang, { label: string; className: string
 
 export default function HistoryOrderPage() {
   const router = useRouter();
+  const accessToken = useAuth().token;
+  const authloading : boolean = useAuth().loading;
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!accessToken && !authloading) {
+      router.push("/login");
+      return;
+    }
+
     async function fetchOrders() {
+      setLoading(true);
+      setError(null);
       try {
-        const res = await fetch(`${api}/order`, {
+        const res = await fetch(`${api}/order/me`, {
           cache: "no-store",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         });
 
         if (!res.ok) {
@@ -71,7 +84,7 @@ export default function HistoryOrderPage() {
     }
 
     fetchOrders();
-  }, []);
+  }, [accessToken, authloading, router]);
 
   async function handleCancelOrder(idOrder: string) {
     if (!confirm("Bạn có chắc chắn muốn hủy đơn hàng này không?")) return;

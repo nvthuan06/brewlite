@@ -1,8 +1,19 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { Product, ProductSizeOption, ProductToppingOption } from "../interface/product";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
+import {
+  Product,
+  ProductSizeOption,
+  ProductToppingOption,
+} from "../interface/product";
 import { CartItem } from "@/interface/cart";
+import { useAuth } from "@/context/AuthContext";
 
 interface CartContextType {
   cartItems: CartItem[];
@@ -97,13 +108,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (soLuongMoi < 1) return;
     setCartItems((prev) =>
       prev.map((item) =>
-        item.cartItemId === cartItemId ? { ...item, soLuong: soLuongMoi } : item,
+        item.cartItemId === cartItemId
+          ? { ...item, soLuong: soLuongMoi }
+          : item,
       ),
     );
   };
 
   const removeFromCart = (cartItemId: string) => {
-    setCartItems((prev) => prev.filter((item) => item.cartItemId !== cartItemId));
+    setCartItems((prev) =>
+      prev.filter((item) => item.cartItemId !== cartItemId),
+    );
   };
 
   const clearCart = () => {
@@ -112,6 +127,25 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       localStorage.removeItem(CART_STORAGE_KEY);
     }
   };
+
+  const { user, loading: authLoading } = useAuth();
+  const prevUserRef = useRef<string | null | undefined>(undefined);
+
+  useEffect(() => {
+    if (authLoading) return;
+
+    const currentUser = user?.email ?? null;
+
+    if (prevUserRef.current === undefined) {
+      prevUserRef.current = currentUser;
+      return;
+    }
+
+    if (prevUserRef.current !== null && prevUserRef.current !== currentUser) {
+      clearCart();
+    }
+    prevUserRef.current = currentUser;
+  }, [user, authLoading]);
 
   return (
     <CartContext.Provider

@@ -1,10 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import type { Request as ExpressRequest } from 'express';
 import { OrderService } from './order.service.js';
 import { CreateOrderDto } from './dto/create-order.dto.js';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
-
 
 type AuthRequest = ExpressRequest & { user: { userId: string; email: string } };
 
@@ -13,22 +21,24 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) {}
   @UseGuards(JwtAuthGuard)
   @Post('checkout')
-  async CheckOut (@Request() req: AuthRequest, @Body() createOrderDto:CreateOrderDto)
-  {
+  async CheckOut(
+    @Request() req: AuthRequest,
+    @Body() createOrderDto: CreateOrderDto,
+  ) {
     const userId: string = req.user.userId;
-    const newOrder = await this.orderService.CheckOut(userId,createOrderDto);
+    const newOrder = await this.orderService.CheckOut(userId, createOrderDto);
     return {
-      data:newOrder,
-      message:"Tạo đơn hàng thành công"
-    }
+      data: newOrder,
+      message: 'Tạo đơn hàng thành công',
+    };
+  }
 
-  }
-  @Get()
-  async TimTatCaHoaDon(){
-    return await this.orderService.findAll()
-  }
   @Patch(':id/status')
-  async updateStatus(@Param('id') idOrder: string, @Request() req: any, @Body() updateDto: UpdateOrderStatusDto) {
+  async updateStatus(
+    @Param('id') idOrder: string,
+    @Request() req: any,
+    @Body() updateDto: UpdateOrderStatusDto,
+  ) {
     const idUser = req.user?.id || req.user?.sub || 'staff_mock_id';
     const updated = await this.orderService.updateOrderStatus(
       idOrder,
@@ -41,7 +51,6 @@ export class OrderController {
     };
   }
 
-  // 3. Khách hàng hủy đơn hàng
   @Patch(':id/cancel')
   async cancelOrder(@Request() req: any, @Param('id') idOrder: string) {
     const userId = req.user?.id || 'du_lieu_mock';
@@ -50,6 +59,21 @@ export class OrderController {
       data: cancelled,
       message: 'Hủy đơn hàng thành công',
     };
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async myOrders(@Request() req: AuthRequest) {
+    const userId = req.user.userId;
+    const orders = await this.orderService.myOrders(userId);
+    return {
+      data: orders,
+      message: 'Lấy danh sách đơn hàng thành công',
+    };
+  }
+
+  @Get()
+  async TimTatCaHoaDon() {
+    return await this.orderService.findAll();
   }
 
   @Get(':id')

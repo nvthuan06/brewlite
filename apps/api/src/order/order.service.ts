@@ -73,14 +73,16 @@ export class OrderService {
         tongTien = Math.max(0, tongTien - discount);
       }
 
-      const user = await queryRunner.manager.findOneBy(User, { idUser: userId });
+      const user = await queryRunner.manager.findOneBy(User, {
+        idUser: userId,
+      });
       if (!user) throw new BadRequestException('Người dùng không tồn tại');
-      const newOrder =  queryRunner.manager.create(Order,{
+      const newOrder = queryRunner.manager.create(Order, {
         user,
-        tongTien:tongTien,
-        trangThai:TrangThaiDonHang.DANG_THANH_TOAN,
-        promotion:ma ?? undefined,
-        orderitem:luuItems
+        tongTien: tongTien,
+        trangThai: TrangThaiDonHang.DANG_THANH_TOAN,
+        promotion: ma ?? undefined,
+        orderitem: luuItems,
       });
       await queryRunner.manager.save(Order, newOrder);
 
@@ -274,5 +276,13 @@ export class OrderService {
       throw new NotFoundException(`Không tìm thấy đơn hàng #${idOrder}`);
     }
     return order;
+  }
+
+  async myOrders(userId: string) {
+    return this.ds.getRepository(Order).find({
+      where: { user: { idUser: userId } },
+      relations: { orderitem: { product: true }, promotion: true },
+      order: { ngayDatHang: 'DESC' },
+    });
   }
 }
