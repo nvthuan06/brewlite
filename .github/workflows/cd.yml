@@ -1,4 +1,4 @@
-name: BrewLite CI/CD Pipeline (Task 5.3)
+name: BrewLite CI/CD Pipeline
 
 on:
   push:
