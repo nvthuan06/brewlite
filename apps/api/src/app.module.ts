@@ -24,7 +24,7 @@ import { HealthModule } from './health/health.module.js';
         password: config.getOrThrow<string>('DB_PASSWORD'),
         database: config.getOrThrow<string>('DB_NAME'),
         autoLoadEntities: true,
-        synchronize: process.env.NODE_ENV !== 'production', 
+        synchronize: config.get<string>('DB_SYNC') === 'true' || process.env.NODE_ENV !== 'production', 
       }),
     }),
     ProductsModule,
