@@ -38,6 +38,7 @@ export interface Order {
   ngayDatHang: string;
   trangThai: TrangThaiDonHang;
   promotion?: Promotion | null;
+  payment?: Payment | null;
   orderitem: OrderItem[];
   payment?: Payment | null;
 }
