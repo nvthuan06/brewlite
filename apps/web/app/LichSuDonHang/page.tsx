@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { Order, OrderItem, TrangThaiDonHang } from "../../interface/order";
+import type { Payment } from "../../interface/payment";
 import type {
   ProductSizeOption,
   ProductToppingOption,
 } from "../../interface/product";
 import { useAuth } from "@/context/AuthContext";
 
-const api = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const api = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 const STATUS_LABELS: Record<TrangThaiDonHang, { label: string; className: string }> = {
   DANG_THANH_TOAN: {
@@ -169,7 +170,10 @@ export default function HistoryOrderPage() {
                 <div className="flex justify-between items-start border-b border-gray-200 pb-2 mb-3">
                   <div>
                     <span className="font-bold text-gray-800 font-mono text-sm">
-                      Đơn #{order.idOrder}
+                      Đơn #{
+                        (order as any).payment?.maChuyenKhoan || 
+                        order.idOrder.split('-')[0]
+                      }
                     </span>
                     <p className="text-xs text-gray-500 mt-0.5">
                       {order.ngayDatHang

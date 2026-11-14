@@ -28,7 +28,7 @@ export default function CartUI() {
   const [promoLoading, setPromoLoading] = useState(false);
   const [promoError, setPromoError] = useState("");
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
   const discountAmount = appliedPromo ? Number(appliedPromo.giamGia) : 0;
   const payableTotal = Math.max(0, totalPrice - discountAmount);

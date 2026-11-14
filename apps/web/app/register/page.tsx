@@ -14,6 +14,7 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

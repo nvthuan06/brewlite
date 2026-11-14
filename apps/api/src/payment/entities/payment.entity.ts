@@ -22,6 +22,9 @@ export class Payment {
   @Column({ type: 'int', unique: true, nullable: true })
   IdempotencyKey: number;
 
+  @Column({ type: 'varchar', nullable: true }) // Hoặc cấu hình tùy ý bạn
+  maChuyenKhoan: string;
+
   @OneToOne(()=>Order)
   @JoinColumn({name:'orderId'})
   order:Order;

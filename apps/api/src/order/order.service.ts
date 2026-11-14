@@ -11,9 +11,10 @@ import { Product } from '../products/entities/product.entity.js';
 import { OrderItem } from './entities/orderItem.entity.js';
 import { TrangThaiDonHang } from './enum/order.enum.js';
 import { PaymentService } from '../payment/payment.service.js';
-import { PhuongThucThanhToan } from '../payment/enum/payment.enum.js';
+import { PhuongThucThanhToan, TrangThaiThanhToan } from '../payment/enum/payment.enum.js';
 import { PromotionService } from '../promotion/promotion.service.js';
 import { User } from '../users/entities/user.entity.js';
+import {Payment} from '../payment/entities/payment.entity.js'
 @Injectable()
 export class OrderService {
   constructor(
@@ -148,6 +149,13 @@ export class OrderService {
 
       order.trangThai = TrangThaiDonHang.HUY;
       const donHangBiHuy = await queryRunner.manager.save(Order, order);
+      const payment = await queryRunner.manager.findOne(Payment, {
+        where: { order: { idOrder: idOrder } },
+      });
+      if (payment) {
+        payment.trangThai = TrangThaiThanhToan.FAIL_PAYMENT;
+        await queryRunner.manager.save(Payment, payment);
+      }
       await queryRunner.commitTransaction();
       return donHangBiHuy;
     } catch (error) {
@@ -279,10 +287,18 @@ export class OrderService {
   }
 
   async myOrders(userId: string) {
-    return this.ds.getRepository(Order).find({
-      where: { user: { idUser: userId } },
-      relations: { orderitem: { product: true }, promotion: true },
-      order: { ngayDatHang: 'DESC' },
-    });
-  }
+    return await this.ds.getRepository(Order).createQueryBuilder('order')
+      .leftJoinAndSelect('order.orderitem', 'orderitem')
+      .leftJoinAndSelect('orderitem.product', 'product')
+      .leftJoinAndSelect('order.promotion', 'promotion')
+      .leftJoinAndMapOne(
+        'order.payment', 
+        Payment, 
+        'payment', 
+        '"payment"."orderId" = "order"."idOrder"'
+      )
+      .where('"order"."idUser" = :userId', { userId })
+      .orderBy('"order"."ngayDatHang"', 'DESC')
+      .getMany();
+    }
 }
