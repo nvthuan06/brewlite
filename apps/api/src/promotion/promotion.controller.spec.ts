@@ -13,7 +13,6 @@ describe('PromotionController', () => {
         {
           provide: PromotionService,
           useValue: {
-            // Giả lập các hàm của PromotionService mà Controller có thể gọi
             taoMaMoi: vi.fn(),
             findAll: vi.fn(),
             kiemTraHopLe: vi.fn(),
