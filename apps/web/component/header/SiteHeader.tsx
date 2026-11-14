@@ -11,7 +11,7 @@ export function SiteHeader() {
 
   if (pathname === "/login" || pathname === "/register" || pathname === "/") {
     return null;
-  } 
+  }
   return (
     <header className="border-b border-amber-100 bg-white/90">
       <nav
@@ -22,7 +22,7 @@ export function SiteHeader() {
           href="/"
           className="text-xl font-extrabold tracking-tight text-amber-900"
         >
-          ☕ BrewLite
+          BrewLite
         </Link>
         <div className="flex flex-wrap items-center gap-3 text-sm font-medium">
           <Link
@@ -30,6 +30,18 @@ export function SiteHeader() {
             className="rounded-lg px-3 py-2 text-stone-700 hover:bg-amber-50"
           >
             Thực đơn
+          </Link>
+          <Link
+            href="/cart"
+            className="rounded-lg px-3 py-2 text-stone-700 hover:bg-amber-50"
+          >
+            Giỏ hàng
+          </Link>
+          <Link
+            href="/LichSuDonHang"
+            className="rounded-lg px-3 py-2 text-stone-700 hover:bg-amber-50"
+          >
+            Xem lịch sử
           </Link>
           {loading ? (
             <span className="text-stone-500">Đang kiểm tra đăng nhập...</span>

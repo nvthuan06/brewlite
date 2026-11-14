@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function CartUI() {
   const router = useRouter();
@@ -31,6 +32,8 @@ export default function CartUI() {
 
   const discountAmount = appliedPromo ? Number(appliedPromo.giamGia) : 0;
   const payableTotal = Math.max(0, totalPrice - discountAmount);
+
+  const accessToken = useAuth().token;
 
   async function handleApplyPromo() {
     const code = promoCode.trim().toUpperCase();
@@ -110,17 +113,16 @@ export default function CartUI() {
       setError("Giỏ hàng có sản phẩm không hợp lệ.");
       return;
     }
+    if (!accessToken) {
+      setError("Bạn cần đăng nhập để tiến hành đặt hàng.");
+      return;
+    }
 
     setLoading(true);
 
     try {
-      const accessToken =
-        typeof window !== "undefined"
-          ? localStorage.getItem("accessToken")
-          : null;
-
       const payload = {
-        idempotencyKey: crypto.randomUUID(),
+        //idempotencyKey: crypto.randomUUID(),
         items,
         ...(appliedPromo ? { maPromotion: appliedPromo.maPromotion } : {}),
       };
@@ -129,7 +131,7 @@ export default function CartUI() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify(payload),
       });

@@ -21,10 +21,9 @@ export async function apiRequest<T>(
   options: RequestInit = {},
   token?: string,
 ): Promise<T> {
-  const cleanPath = path.replace(/^\/backend/, "");
-  const url = cleanPath.startsWith("http")
-    ? cleanPath
-    : `${api}${cleanPath.startsWith("/") ? "" : "/"}${cleanPath}`;
+  const url = path.startsWith("http")
+    ? path
+    : `${api}${path.startsWith("/") ? "" : "/"}${path}`;
     
   let response: Response;
   try {
