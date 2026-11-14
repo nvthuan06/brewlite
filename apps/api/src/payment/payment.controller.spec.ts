@@ -23,7 +23,7 @@ describe('PaymentController', () => {
     controller = module.get<PaymentController>(PaymentController);
   });
 
-  it('should be defined', () => {
+  it('Payment controller', () => {
     expect(controller).toBeDefined();
   });
 });
