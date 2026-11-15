@@ -41,7 +41,6 @@ enum TrangThaiThanhToan <<enumeration>> {
 
 enum PhuongThucThanhToan <<enumeration>> {
     VI
-    THE
 }
 
 ' ================= CLASSES =================

@@ -19,7 +19,7 @@ DB --> API : Trả về kết quả
 deactivate DB
 
 alt Có(Gửi lại yêu cầu)
-    API --> UI : Quay lại trạng thái chưa thanh toán.
+    API --> UI : Hiển thị đơn hàng đã thanh toán.
 else Chưa(Tạo order mới)
     API -> DB : INSERT Order
     activate DB
