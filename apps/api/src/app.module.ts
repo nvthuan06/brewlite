@@ -10,10 +10,16 @@ import { OrderModule } from './order/order.module.js';
 import { PaymentModule } from './payment/payment.module.js';
 import { PromotionModule } from './promotion/promotion.module.js';
 import { HealthModule } from './health/health.module.js';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'images'),
+      serveRoot: '/images',
+    }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({

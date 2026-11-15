@@ -12,6 +12,7 @@ import {
   ProductToppingOption,
 } from './entities/product.entity.js';
 import { SIZE, TOPPING } from '../order/enum/orderitem.enum.js';
+import {CreateProductDto} from '../products/dto/create-product.dto.js'
 
 export const DEFAULT_SIZES: ProductSizeOption[] = [
   { code: SIZE.S, label: 'Size S', extraPrice: 0 },
@@ -44,7 +45,7 @@ export class ProductsService implements OnModuleInit {
           soLuong: 100,
           trangThaiBan: true,
           urlAnh:
-            'https://cdn.tgdd.vn/Products/Images/42/268882/cafe-sua-da-600x600.jpg',
+            '/images/ca_phe_sua.png',
           sizes: DEFAULT_SIZES,
           toppings: DEFAULT_TOPPINGS,
         },
@@ -54,7 +55,7 @@ export class ProductsService implements OnModuleInit {
           soLuong: 100,
           trangThaiBan: true,
           urlAnh:
-            'https://cdn.tgdd.vn/Products/Images/42/268882/cafe-den-600x600.jpg',
+            '/images/Ca_phe_den.png',
           sizes: DEFAULT_SIZES,
           toppings: DEFAULT_TOPPINGS,
         },
@@ -64,7 +65,7 @@ export class ProductsService implements OnModuleInit {
           soLuong: 100,
           trangThaiBan: true,
           urlAnh:
-            'https://cdn.tgdd.vn/Products/Images/42/268882/cappuccino-600x600.jpg',
+            '/images/cappuchino.png',
           sizes: DEFAULT_SIZES,
           toppings: DEFAULT_TOPPINGS,
         },
@@ -74,7 +75,7 @@ export class ProductsService implements OnModuleInit {
           soLuong: 100,
           trangThaiBan: true,
           urlAnh:
-            'https://cdn.tgdd.vn/Products/Images/42/268882/latte-600x600.jpg',
+            '/images/latte.png',
           sizes: DEFAULT_SIZES,
           toppings: DEFAULT_TOPPINGS,
         },
@@ -84,7 +85,7 @@ export class ProductsService implements OnModuleInit {
           soLuong: 100,
           trangThaiBan: true,
           urlAnh:
-            'https://cdn.tgdd.vn/Products/Images/42/268882/sinh-to-bo-600x600.jpg',
+            '/images/sinh_to_bo.png',
           sizes: DEFAULT_SIZES,
           toppings: DEFAULT_TOPPINGS,
         },

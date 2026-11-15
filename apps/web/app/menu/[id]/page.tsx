@@ -100,9 +100,13 @@ function ProductDetailContent() {
 
       <div className="border border-gray-700 rounded-lg p-6 shadow-md">
         <img
-          src={product.urlAnh}
+          src={
+            product.urlAnh?.startsWith("http")
+            ? product.urlAnh
+            : `${api}/images/${product.urlAnh?.split("/").pop()}`
+          }
           alt={product.tenProduct}
-          className="w-full h-64 object-cover rounded-md mb-4 bg-gray-800"
+          className="w-full h-auto object-cover rounded-md mb-4 bg-gray-800"
         />
 
         <div className="flex items-center justify-between mb-2">
