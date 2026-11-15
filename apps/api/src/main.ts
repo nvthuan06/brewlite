@@ -7,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
   // 1. Cấu hình CORS (Chỉ gọi 1 lần duy nhất)
-  app.enableCors({ origin: ['http://localhost:3000', 'http://localhost:3001'] });
+  app.enableCors({ origin: ['http://localhost:3000', 'http://localhost:3001', 'https://brewlite-web-gq15.onrender.com'] });
   
   // 2. Cấu hình ValidationPipe
   app.useGlobalPipes(new ValidationPipe({
