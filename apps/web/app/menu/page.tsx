@@ -7,9 +7,10 @@ export default function MenuPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const api = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
 
   useEffect(() => {
-    fetch('http://localhost:3001/products')
+    fetch(`${api}/products`)
       .then((res) => {
         if (!res.ok) throw new Error('Mất kết nối');
         return res.json();

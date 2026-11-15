@@ -26,11 +26,12 @@ function ProductDetailContent() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const api = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"
 
   useEffect(() => {
     if (!id) return;
 
-    fetch(`http://localhost:3001/products/${id}`)
+    fetch(`${api}/products/${id}`)
       .then((res) => {
         if (res.status === 404) {
           setNotFound(true);
