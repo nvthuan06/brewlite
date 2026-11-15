@@ -43,7 +43,7 @@ describe('OrderController - unit tests', () => {
   });
 
   describe('CheckOut', () => {
-    it('nên tạo đơn hàng mới và trả về thông báo thành công', async () => {
+    it('API-08:nên tạo đơn hàng mới và trả về thông báo thành công', async () => {
       const mockReq = {
         user: { userId: 'user-123', email: 'test@brewlite.com' },
       } as any;
@@ -68,7 +68,7 @@ describe('OrderController - unit tests', () => {
   });
 
   describe('updateStatus', () => {
-    it('nên cập nhật trạng thái đơn hàng với req.user.id', async () => {
+    it('API-09:nên cập nhật trạng thái đơn hàng với req.user.id', async () => {
       const idOrder = 'order-1';
       const mockReq = { user: { id: 'staff-01' } };
       const updateDto = { trangThai: TrangThaiDonHang.DA_NHAN } as any;
@@ -89,7 +89,7 @@ describe('OrderController - unit tests', () => {
       });
     });
 
-    it('nên dùng fallback staff_mock_id nếu req.user không có id hoặc sub', async () => {
+    it('API-10:nên dùng fallback staff_mock_id nếu req.user không có id hoặc sub', async () => {
       const idOrder = 'order-1';
       const mockReq = {};
       const updateDto = { trangThai: TrangThaiDonHang.HOAN_TAT } as any;
@@ -112,7 +112,7 @@ describe('OrderController - unit tests', () => {
   });
 
   describe('cancelOrder', () => {
-    it('nên hủy đơn hàng với req.user.id', async () => {
+    it('API-11:nên hủy đơn hàng với req.user.id', async () => {
       const idOrder = 'order-1';
       const mockReq = { user: { id: 'user-123' } };
       const mockCancelled = { idOrder, trangThai: TrangThaiDonHang.HUY };
@@ -131,7 +131,7 @@ describe('OrderController - unit tests', () => {
       });
     });
 
-    it('nên dùng fallback du_lieu_mock khi không có req.user', async () => {
+    it('API-12:nên dùng fallback du_lieu_mock khi không có req.user', async () => {
       const idOrder = 'order-1';
       const mockReq = {};
       const mockCancelled = { idOrder, trangThai: TrangThaiDonHang.HUY };
@@ -152,7 +152,7 @@ describe('OrderController - unit tests', () => {
   });
 
   describe('myOrders', () => {
-    it('nên trả về danh sách đơn hàng của người dùng hiện tại', async () => {
+    it('API-13:nên trả về danh sách đơn hàng của người dùng hiện tại', async () => {
       const mockReq = {
         user: { userId: 'user-123', email: 'test@brewlite.com' },
       } as any;
@@ -171,7 +171,7 @@ describe('OrderController - unit tests', () => {
   });
 
   describe('TimTatCaHoaDon', () => {
-    it('nên trả về toàn bộ danh sách hóa đơn từ service', async () => {
+    it('API-14:nên trả về toàn bộ danh sách hóa đơn từ service', async () => {
       const mockAllOrders = [{ idOrder: 'order-1' }, { idOrder: 'order-2' }];
 
       orderService.findAll.mockResolvedValue(mockAllOrders);
@@ -184,7 +184,7 @@ describe('OrderController - unit tests', () => {
   });
 
   describe('findOne', () => {
-    it('nên trả về thông tin chi tiết của một đơn hàng theo id', async () => {
+    it('API-15:nên trả về thông tin chi tiết của một đơn hàng theo id', async () => {
       const idOrder = 'order-1';
       const mockOrder = { idOrder, tongTien: 40000 };
 

@@ -34,7 +34,7 @@ describe('ProductsController', () => {
   });
 
   describe('findAll', () => {
-    it('nên gọi productsService.findAll và trả về danh sách sản phẩm', async () => {
+    it('API-01:nên gọi productsService.findAll và trả về danh sách sản phẩm', async () => {
       const mockProducts = [
         { idProduct: 1, tenProduct: 'Cà phê sữa', giaProduct: 30000 },
       ];
@@ -47,7 +47,7 @@ describe('ProductsController', () => {
     });
   });
 
-  describe('findOne', () => {
+  describe('API-02:findOne', () => {
     it('nên trả về chi tiết sản phẩm kèm tùy chọn size và topping', async () => {
       const mockDetail = {
         idProduct: 1,
@@ -69,7 +69,7 @@ describe('ProductsController', () => {
       expect(result).toEqual(mockDetail);
     });
 
-    it('nên chuyển tiếp lỗi NotFoundException khi không tìm thấy sản phẩm', async () => {
+    it('FAIL-01:nên chuyển tiếp lỗi NotFoundException khi không tìm thấy sản phẩm', async () => {
       mockProductsService.findOne.mockRejectedValue(
         new NotFoundException('Không tìm thấy sản phẩm có id 999'),
       );

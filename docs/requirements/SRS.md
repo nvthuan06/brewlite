@@ -9,7 +9,7 @@
 | **FR-03** | Quản lý giỏ hàng            | Giỏ hàng            | **Must**   | Khách hàng có thể thêm/sửa/xóa sản phẩm. Tổng tiền cập nhật theo thời gian thực dựa trên các tùy chọn.                            |
 | **FR-04** | Đăng ký tài khoản           | Xác thực            | **Must**   | Khách hàng mới có thể đăng ký tài khoản. Thông tin mật khẩu phải được mã hóa (hash) trước khi lưu vào PostgreSQL.                 |
 | **FR-05** | Đăng nhập hệ thống          | Xác thực            | **Must**   | Người dùng đăng nhập thành công bằng tài khoản hợp lệ, hệ thống trả về token JWT để duy trì phiên đăng nhập.                      |
-| **FR-06** | Phân quyền truy cập         | Phân quyền          | **Must**   | Hệ thống dựa vào JWT để cấp quyền: Khách hàng (chỉ đặt hàng), Nhân viên (cập nhật trạng thái đơn), Quản lý (được quyền nhập kho). |
+| **FR-06** | Phân quyền truy cập         | Phân quyền          | **Won't**  | Hệ thống dựa vào JWT để cấp quyền: Khách hàng (chỉ đặt hàng), Nhân viên (cập nhật trạng thái đơn), Quản lý (được quyền nhập kho). |
 | **FR-07** | Đặt và thanh toán đơn hàng  | Đặt đơn, Thanh toán | **Must**   | Tạo đơn hàng thành công để chuyển sang thanh toán.                                                                                |
 | **FR-08** | Quản lý trạng thái đơn hàng | Quản lý đơn         | **Must**   | Nhân viên quầy có thể xem danh sách đơn realtime và chuyển trạng thái (Chờ xử lý -> Đang pha chế -> Hoàn thành).                  |
 | **FR-09** | Xem lịch sử đơn hàng        | Lịch sử đơn         | **Should** | Khách hàng xem lại được danh sách các đơn đã đặt và trạng thái hiện tại của đơn hàng.                                             |

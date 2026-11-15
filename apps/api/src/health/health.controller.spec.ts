@@ -26,7 +26,6 @@ describe('HealthController', () => {
         {
           provide: HealthCheckService,
           useValue: {
-            // Thực thi mảng các hàm indicator truyền vào hoặc trả về kết quả mẫu
             check: vi.fn(async (indicators: Array<() => Promise<any>>) => {
               for (const indicator of indicators) {
                 await indicator();
@@ -61,11 +60,11 @@ describe('HealthController', () => {
     healthCheckService = module.get<HealthCheckService>(HealthCheckService);
   });
 
-  it('Health controller kiểm tra', () => {
+  it('API-18:Health controller kiểm tra', () => {
     expect(controller).toBeDefined();
   });
 
-  it('Nên trả về trạng thái ok khi hệ thống và database hoạt động bình thường', async () => {
+  it('API-19:Nên trả về trạng thái ok khi hệ thống và database hoạt động bình thường', async () => {
     const result = await controller.check();
 
     expect(healthCheckService.check).toHaveBeenCalled();
