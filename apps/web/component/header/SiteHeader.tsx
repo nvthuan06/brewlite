@@ -13,7 +13,7 @@ export function SiteHeader() {
     return null;
   }
   return (
-    <header className="border-b border-amber-100 bg-white/90">
+    <header className="border-b border-amber-100 bg-amber-50">
       <nav
         className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-4"
         aria-label="Điều hướng chính"

@@ -100,11 +100,13 @@ function ProductDetailContent() {
 
       <div className="border border-gray-700 rounded-lg p-6 shadow-md">
         <img
-          src={
-            product.urlAnh?.startsWith("http")
-            ? product.urlAnh
-            : `${api}/images/${product.urlAnh?.split("/").pop()}`
-          }
+         src={
+          product.urlAnh?.includes("localhost:3000")
+          ? product.urlAnh.replace("http://localhost:3000", api) // Ép đổi 3000 thành 3001
+          : product.urlAnh?.startsWith("http")
+          ? product.urlAnh
+          : `${api}/images/${product.urlAnh?.split("/").pop()}`
+        }
           alt={product.tenProduct}
           className="w-full h-auto object-cover rounded-md mb-4 bg-gray-800"
         />
@@ -182,14 +184,14 @@ function ProductDetailContent() {
           </div>
         </div>
 
-        <div className="border-t border-gray-700 pt-4 text-sm text-gray-300">
+        <div className="border-t border-gray-700 pt-4 text-sm text-black">
           Đã chọn:{" "}
-          <span className="font-semibold text-white">Size {selectedSize}</span>
+          <span className="font-semibold text-black">Size {selectedSize}</span>
           {selectedTopping && (
             <>
               {" "}
               &bull;{" "}
-              <span className="font-semibold text-white">
+              <span className="font-semibold text-black">
                 {product.toppings?.find((t) => t.code === selectedTopping)?.label}
               </span>
             </>

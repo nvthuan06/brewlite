@@ -5,11 +5,12 @@ import { PhuongThucThanhToan, TrangThaiThanhToan } from './enum/payment.enum.js'
 import { Order } from '../order/entities/order.entity.js';
 import {TrangThaiDonHang} from '../order/enum/order.enum.js'
 import {Product } from '../products/entities/product.entity.js'
+import { NguyenLieuService } from '../nguyen-lieu/nguyen-lieu.service.js';
 
 
 @Injectable()
 export class PaymentService {
-    constructor(private readonly ds: DataSource) {}
+    constructor(private readonly ds: DataSource, private readonly nlService:NguyenLieuService) {}
     async CreatePayment (
         queryRunner: QueryRunner, 
         order: Order, 
@@ -99,8 +100,10 @@ export class PaymentService {
                     for (const item of payment.order.orderitem){
                         if((item as any).product){
                             (item as any).product.soLuong = (item as any).product.soLuong - (item as any).soLuong;
-                                (item as any).product.soLuong = Math.max(0, (item as any).product.soLuong); 
+                                (item as any).product.soLuong = Math.max(0, (item as any).product.soLuong,); 
                                 await queryRunner.manager.save(Product, (item as any).product);
+                                await this.nlService.truTonKho((item as any).product.idProduct,(item as any).soLuong, queryRunner.manager )
+                                
                         }
                     }
                 }

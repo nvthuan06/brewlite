@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { OrderItem } from '../../order/entities/orderItem.entity.js';
 import { SIZE, TOPPING } from '../../order/enum/orderitem.enum.js';
+import { ChiTietNguyenLieu } from '../../nguyen-lieu/entities/chitietnguyenlieu.entity.js';
 
 export interface ProductSizeOption {
   code: SIZE;
@@ -42,4 +43,7 @@ export class Product {
 
   @OneToMany(() => OrderItem, (orderitem) => orderitem.product)
   orderitem: OrderItem[];
+
+  @OneToMany(()=>ChiTietNguyenLieu,(nl)=>nl.product)
+  chitietnguyenlieu: ChiTietNguyenLieu[]
 }

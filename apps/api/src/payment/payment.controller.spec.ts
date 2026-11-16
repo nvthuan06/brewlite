@@ -52,7 +52,6 @@ describe('PaymentController', () => {
 
       // Kiểm tra controller có truyền đúng payload xuống service không
       expect(paymentService.handWeHook).toHaveBeenCalledWith(mockPayload);
-      // Kiểm tra kết quả trả về
       expect(result).toEqual(mockResult);
     });
   });

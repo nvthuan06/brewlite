@@ -12,6 +12,7 @@ import { PromotionModule } from './promotion/promotion.module.js';
 import { HealthModule } from './health/health.module.js';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { NguyenLieuModule } from './nguyen-lieu/nguyen-lieu.module.js';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { join } from 'path';
     PaymentModule,
     PromotionModule,
     HealthModule,
+    NguyenLieuModule,
   ],
   controllers: [AppController],
   providers: [AppService],

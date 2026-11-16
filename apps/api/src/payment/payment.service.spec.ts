@@ -29,6 +29,10 @@ describe('PaymentService - payment and webhook unit tests', () => {
     manager,
   };
   const ds = { getRepository: vi.fn(), createQueryRunner: vi.fn() };
+  const mockNguyenLieuService = {
+    capNhatSoLuong: vi.fn(),
+    truTonKho: vi.fn(),
+  };
   let service: PaymentService;
 
   const payload = (amount = 100000) => ({
@@ -68,7 +72,10 @@ describe('PaymentService - payment and webhook unit tests', () => {
     runner.commitTransaction.mockResolvedValue(undefined);
     runner.rollbackTransaction.mockResolvedValue(undefined);
     runner.release.mockResolvedValue(undefined);
-    service = new PaymentService(ds as unknown as DataSource);
+    service = new PaymentService(
+      ds as unknown as DataSource, 
+      mockNguyenLieuService as any // Truyền mock service đã được khai báo ở trên vào đây
+    );;
   });
 
   it('creates a PENDING wallet payment with bank QR URL', async () => {

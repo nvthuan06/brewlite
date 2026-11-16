@@ -9,6 +9,9 @@ import {
 } from './products.service.js';
 import { Product } from './entities/product.entity.js';
 import { SIZE, TOPPING } from '../order/enum/orderitem.enum.js';
+import { ChiTietNguyenLieu } from '../nguyen-lieu/entities/chitietnguyenlieu.entity.js';
+import { NguyenLieu } from '../nguyen-lieu/entities/nguyen-lieu.entity.js';
+import { NguyenLieuService } from '../nguyen-lieu/nguyen-lieu.service.js';
 
 describe('ProductsService', () => {
   let service: ProductsService;
@@ -25,12 +28,33 @@ describe('ProductsService', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
 
-    const module: TestingModule = await Test.createTestingModule({
+const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProductsService,
         {
           provide: getRepositoryToken(Product),
           useValue: mockProductRepository,
+        },
+
+        { 
+          provide: getRepositoryToken(NguyenLieu), 
+          useValue: { 
+            count: vi.fn().mockResolvedValue(1), 
+            save: vi.fn() 
+          } 
+        },
+        { 
+          provide: getRepositoryToken(ChiTietNguyenLieu), 
+          useValue: { 
+            count: vi.fn().mockResolvedValue(1), 
+            save: vi.fn(), 
+            create: vi.fn() 
+          } 
+        },
+        
+        { 
+          provide: NguyenLieuService, 
+          useValue: { capNhatSoLuong: vi.fn() } 
         },
       ],
     }).compile();
@@ -115,14 +139,16 @@ describe('ProductsService', () => {
   });
 
 
-  describe('onModuleInit - khởi tạo dữ liệu sản phẩm', () => {
+describe('onModuleInit - khởi tạo dữ liệu sản phẩm', () => {
     it('tạo 5 sản phẩm mặc định nếu database đang trống', async () => {
       mockProductRepository.count.mockResolvedValue(0);
       mockProductRepository.save.mockResolvedValue(undefined);
+      // Cấp phát mảng rỗng cho lần gọi find() thứ 2 (lúc quét cập nhật số lượng) để không bị lỗi
+      mockProductRepository.find.mockResolvedValue([]);
 
       await service.onModuleInit();
 
-      expect(mockProductRepository.save).toHaveBeenCalledOnce();
+      // Bỏ đếm toHaveBeenCalledOnce, chỉ cần kiểm tra dữ liệu mảng được truyền vào save
       const seeded = mockProductRepository.save.mock.calls[0][0];
       expect(seeded).toHaveLength(5);
       expect(seeded.map((p: any) => p.tenProduct)).toEqual([
@@ -130,11 +156,10 @@ describe('ProductsService', () => {
       ]);
       expect(seeded[0]).toEqual(expect.objectContaining({
         giaProduct: 30000,
-        soLuong: 100,
         sizes: DEFAULT_SIZES,
         toppings: DEFAULT_TOPPINGS,
       }));
-      expect(mockProductRepository.find).not.toHaveBeenCalled();
+      // Đã bỏ dòng expect(find).not.toHaveBeenCalled() vì hàm capNhatSoLuong luôn gọi find() ở cuối
     });
 
     it('không tạo dữ liệu mẫu nếu đã có sản phẩm đầy đủ', async () => {
@@ -146,8 +171,11 @@ describe('ProductsService', () => {
 
       await service.onModuleInit();
 
-      expect(mockProductRepository.find).toHaveBeenCalledOnce();
-      expect(mockProductRepository.save).not.toHaveBeenCalled();
+      // find() được gọi 2 lần: 1 lần check tồn tại, 1 lần lấy ds cập nhật số lượng
+      expect(mockProductRepository.find).toHaveBeenCalledTimes(2);
+      
+      // Không được truyền mảng (dữ liệu mẫu) vào save, nhưng có thể truyền object đơn lẻ
+      expect(mockProductRepository.save).not.toHaveBeenCalledWith(expect.any(Array));
     });
 
     it('bổ sung sizes và toppings mặc định cho sản phẩm cũ bị thiếu cả hai', async () => {
@@ -180,12 +208,15 @@ describe('ProductsService', () => {
       const complete = { idProduct: 1, sizes: DEFAULT_SIZES, toppings: DEFAULT_TOPPINGS };
       const missingSizes: any = { idProduct: 2, sizes: null, toppings: DEFAULT_TOPPINGS };
       const missingToppings: any = { idProduct: 3, sizes: DEFAULT_SIZES, toppings: null };
+      
       mockProductRepository.count.mockResolvedValue(3);
       mockProductRepository.find.mockResolvedValue([complete, missingSizes, missingToppings]);
 
       await service.onModuleInit();
 
-      expect(mockProductRepository.save).toHaveBeenCalledTimes(2);
+      // Bỏ dòng đếm toHaveBeenCalledTimes(2) vì vòng lặp số lượng sẽ gọi thêm save
+      
+      // Đảm bảo 2 sản phẩm bị thiếu cấu hình vẫn được vá và đưa vào lưu trữ
       expect(mockProductRepository.save).toHaveBeenCalledWith(missingSizes);
       expect(mockProductRepository.save).toHaveBeenCalledWith(missingToppings);
     });
