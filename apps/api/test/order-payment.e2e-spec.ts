@@ -11,6 +11,7 @@ import { TrangThaiDonHang } from '../src/order/enum/order.enum.js';
 import { TrangThaiThanhToan } from '../src/payment/enum/payment.enum.js';
 import { getConnectionToken } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
+import { NguyenLieu } from '../src/nguyen-lieu/entities/nguyen-lieu.entity.js';
 
 describe('Luồng từ tạo đơn đến thanh toán', () => {
   let app: INestApplication;
@@ -36,6 +37,10 @@ describe('Luồng từ tạo đơn đến thanh toán', () => {
   beforeEach(async () => {
     // 1. Làm sạch và tạo lại toàn bộ bảng
     await dataSource.synchronize(true);
+    await dataSource.getRepository(NguyenLieu).save([
+    { idNguyenLieu: 1, tenNguyenLieu: 'Hạt cà phê', donVi: 'g', tonKho: 1000 },
+    { idNguyenLieu: 2, tenNguyenLieu: 'Sữa đặc', donVi: 'ml', tonKho: 1000 }
+    ]);
 
     // 2. Seed dữ liệu User
     testUser = await dataSource.getRepository(User).save({
