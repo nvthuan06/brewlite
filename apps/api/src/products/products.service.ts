@@ -45,9 +45,6 @@ export class ProductsService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    if (process.env.NODE_ENV === 'test') {
-      return; 
-    }
     const dem = await this.productRepo.count();
     const demNguyenLieu = await this.nguyenlieuRepo.count();
     const demCongThuc = await this.congthucRepo.count();
