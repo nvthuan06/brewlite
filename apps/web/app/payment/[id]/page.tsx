@@ -52,8 +52,15 @@ function PaymentContent() {
 
     async function fetchOrder() {
       try {
+        const token =
+          typeof window !== "undefined"
+            ? sessionStorage.getItem("brewlite_access_token")
+            : null;
         const res = await fetch(`${apiUrl}/order/${orderId}`, {
           cache: "no-store",
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
         });
         if (!res.ok) throw new Error("Không tìm thấy đơn hàng.");
 
@@ -79,8 +86,15 @@ function PaymentContent() {
     setError("");
 
     try {
+      const token =
+        typeof window !== "undefined"
+          ? sessionStorage.getItem("brewlite_access_token")
+          : null;
       const res = await fetch(`${apiUrl}/order/${orderId}/cancel`, {
         method: "PATCH",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
       const result = await res.json().catch(() => null);
 
