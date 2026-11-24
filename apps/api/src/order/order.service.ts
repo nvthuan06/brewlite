@@ -1,6 +1,7 @@
 import {
   Injectable,
   BadRequestException,
+  ForbiddenException,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
@@ -123,10 +124,14 @@ export class OrderService {
     try {
       const order = await queryRunner.manager.findOne(Order, {
         where: { idOrder: idOrder },
-        relations: { orderitem: { product: true } },
+        relations: { user: true, orderitem: { product: true } },
       });
       if (!order) {
         throw new NotFoundException('Không tìm thấy đơn hàng');
+      }
+
+      if (order.user && order.user.idUser && order.user.idUser !== userid) {
+        throw new ForbiddenException('Bạn không có quyền hủy đơn hàng này');
       }
 
       const trangThaiChoPhepHuy = [
@@ -162,7 +167,8 @@ export class OrderService {
       await queryRunner.rollbackTransaction();
       if (
         error instanceof BadRequestException ||
-        error instanceof NotFoundException
+        error instanceof NotFoundException ||
+        error instanceof ForbiddenException
       ) {
         throw error;
       }
@@ -275,13 +281,16 @@ export class OrderService {
     });
   }
 
-  async findOne(idOrder: string) {
+  async findOne(idOrder: string, userId?: string) {
     const order = await this.ds.getRepository(Order).findOne({
       where: { idOrder },
-      relations: { orderitem: { product: true }, promotion: true },
+      relations: { user: true, orderitem: { product: true }, promotion: true },
     });
     if (!order) {
       throw new NotFoundException(`Không tìm thấy đơn hàng #${idOrder}`);
+    }
+    if (userId && order.user && order.user.idUser && order.user.idUser !== userId) {
+      throw new ForbiddenException('Bạn không có quyền xem đơn hàng này');
     }
     return order;
   }

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BadRequestException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
 import { OrderService } from './order.service.js';
@@ -334,6 +334,20 @@ describe('OrderService', () => {
       expect(queryRunnerMock.release).toHaveBeenCalledOnce();
     });
 
+    it('từ chối hủy đơn nếu không phải chủ đơn (ném ForbiddenException)', async () => {
+      const order = {
+        idOrder: 'o1',
+        trangThai: TrangThaiDonHang.DANG_THANH_TOAN,
+        user: { idUser: 'other-user' },
+      };
+      queryRunnerMock.manager.findOne.mockResolvedValue(order);
+      await expect(service.cancelOrder(userId, 'o1'))
+        .rejects.toBeInstanceOf(ForbiddenException);
+      expect(queryRunnerMock.commitTransaction).not.toHaveBeenCalled();
+      expect(queryRunnerMock.rollbackTransaction).toHaveBeenCalledOnce();
+      expect(queryRunnerMock.release).toHaveBeenCalledOnce();
+    });
+
     it('từ chối hủy đơn đã hoàn tất', async () => {
       queryRunnerMock.manager.findOne.mockResolvedValue({
         idOrder: 'o1', trangThai: TrangThaiDonHang.HOAN_TAT,
@@ -515,8 +529,22 @@ describe('OrderService', () => {
       await expect(service.findOne('o1')).resolves.toBe(order);
       expect(repository.findOne).toHaveBeenCalledWith({
         where: { idOrder: 'o1' },
-        relations: { orderitem: { product: true }, promotion: true },
+        relations: { user: true, orderitem: { product: true }, promotion: true },
       });
+    });
+
+    it('findOne ném ForbiddenException khi user không sở hữu đơn', async () => {
+      const order = { idOrder: 'o1', user: { idUser: 'user-b' } };
+      const repository = { findOne: vi.fn().mockResolvedValue(order) };
+      dataSourceMock.getRepository.mockReturnValue(repository);
+      await expect(service.findOne('o1', 'user-a')).rejects.toBeInstanceOf(ForbiddenException);
+    });
+
+    it('findOne cho phép chủ đơn xem đơn hàng của mình', async () => {
+      const order = { idOrder: 'o1', user: { idUser: 'user-a' } };
+      const repository = { findOne: vi.fn().mockResolvedValue(order) };
+      dataSourceMock.getRepository.mockReturnValue(repository);
+      await expect(service.findOne('o1', 'user-a')).resolves.toBe(order);
     });
 
     it('findOne trả về 404 khi đơn hàng không tồn tại', async () => {

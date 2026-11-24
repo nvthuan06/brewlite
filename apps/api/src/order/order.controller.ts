@@ -51,9 +51,13 @@ export class OrderController {
     };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id/cancel')
-  async cancelOrder(@Request() req: any, @Param('id') idOrder: string) {
-    const userId = req.user?.id || 'du_lieu_mock';
+  async cancelOrder(
+    @Request() req: AuthRequest,
+    @Param('id') idOrder: string,
+  ) {
+    const userId = req.user?.userId || (req.user as any)?.id || (req.user as any)?.sub;
     const cancelled = await this.orderService.cancelOrder(userId, idOrder);
     return {
       data: cancelled,
@@ -71,14 +75,20 @@ export class OrderController {
     };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async TimTatCaHoaDon() {
     return await this.orderService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async findOne(@Param('id') idOrder: string) {
-    const order = await this.orderService.findOne(idOrder);
+  async findOne(
+    @Request() req: AuthRequest,
+    @Param('id') idOrder: string,
+  ) {
+    const userId = req.user?.userId || (req.user as any)?.id || (req.user as any)?.sub;
+    const order = await this.orderService.findOne(idOrder, userId);
     return {
       data: order,
       message: 'Lấy thông tin đơn hàng thành công',

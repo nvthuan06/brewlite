@@ -94,6 +94,9 @@ export default function HistoryOrderPage() {
     try {
       const res = await fetch(`${api}/order/${idOrder}/cancel`, {
         method: "PATCH",
+        headers: {
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+        },
       });
 
       const result = await res.json().catch(() => null);

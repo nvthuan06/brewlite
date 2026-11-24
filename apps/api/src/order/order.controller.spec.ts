@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException } from '@nestjs/common';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OrderController } from './order.controller.js';
 import { OrderService } from './order.service.js';
@@ -114,7 +113,7 @@ describe('OrderController - unit tests', () => {
   describe('cancelOrder', () => {
     it('API-11:nên hủy đơn hàng với req.user.id', async () => {
       const idOrder = 'order-1';
-      const mockReq = { user: { id: 'user-123' } };
+      const mockReq = { user: { id: 'user-123' } } as any;
       const mockCancelled = { idOrder, trangThai: TrangThaiDonHang.HUY };
 
       orderService.cancelOrder.mockResolvedValue(mockCancelled);
@@ -131,9 +130,9 @@ describe('OrderController - unit tests', () => {
       });
     });
 
-    it('API-12:nên dùng fallback du_lieu_mock khi không có req.user', async () => {
+    it('API-12:nên dùng req.user.userId để hủy đơn hàng', async () => {
       const idOrder = 'order-1';
-      const mockReq = {};
+      const mockReq = { user: { userId: 'user-456' } } as any;
       const mockCancelled = { idOrder, trangThai: TrangThaiDonHang.HUY };
 
       orderService.cancelOrder.mockResolvedValue(mockCancelled);
@@ -141,7 +140,7 @@ describe('OrderController - unit tests', () => {
       const result = await controller.cancelOrder(mockReq, idOrder);
 
       expect(orderService.cancelOrder).toHaveBeenCalledWith(
-        'du_lieu_mock',
+        'user-456',
         idOrder,
       );
       expect(result).toEqual({
@@ -184,19 +183,48 @@ describe('OrderController - unit tests', () => {
   });
 
   describe('findOne', () => {
-    it('API-15:nên trả về thông tin chi tiết của một đơn hàng theo id', async () => {
+    it('API-15:nên trả về thông tin chi tiết của một đơn hàng theo id và userId', async () => {
       const idOrder = 'order-1';
+      const mockReq = {
+        user: { userId: 'user-123', email: 'test@brewlite.com' },
+      } as any;
       const mockOrder = { idOrder, tongTien: 40000 };
 
       orderService.findOne.mockResolvedValue(mockOrder);
 
-      const result = await controller.findOne(idOrder);
+      const result = await controller.findOne(mockReq, idOrder);
 
-      expect(orderService.findOne).toHaveBeenCalledWith(idOrder);
+      expect(orderService.findOne).toHaveBeenCalledWith(idOrder, 'user-123');
       expect(result).toEqual({
         data: mockOrder,
         message: 'Lấy thông tin đơn hàng thành công',
       });
+    });
+  });
+
+  describe('Kiểm tra Auth Guards (X-12, X-13, X-14, X-15)', () => {
+    it('X-13, X-14, X-15: findOne, TimTatCaHoaDon và cancelOrder đều được bảo vệ bởi JwtAuthGuard', () => {
+      const findOneGuards = Reflect.getMetadata(
+        '__guards__',
+        OrderController.prototype.findOne,
+      );
+      const timTatCaGuards = Reflect.getMetadata(
+        '__guards__',
+        OrderController.prototype.TimTatCaHoaDon,
+      );
+      const cancelGuards = Reflect.getMetadata(
+        '__guards__',
+        OrderController.prototype.cancelOrder,
+      );
+
+      expect(findOneGuards).toBeDefined();
+      expect(findOneGuards[0].name).toBe('JwtAuthGuard');
+
+      expect(timTatCaGuards).toBeDefined();
+      expect(timTatCaGuards[0].name).toBe('JwtAuthGuard');
+
+      expect(cancelGuards).toBeDefined();
+      expect(cancelGuards[0].name).toBe('JwtAuthGuard');
     });
   });
 });
